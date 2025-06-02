@@ -1,27 +1,31 @@
 # Code
 
-This directory contains all analysis notebooks used in the study:
+This project includes both R and Python code used to conduct the analysis in:
 
 **"Global Gridded Crop Models Underestimate Yield Losses from Climatic Extremes"**
 
-All analyses were conducted in **R** using **Quarto notebooks (`.qmd`)**.
-
 ## Structure
 
-- `notebooks/`: 
+- `notebooks/`: R + Quarto notebooks used for main figures and analysis
+- `python/`: Python scripts for specific preprocessing steps
 
-## Getting Started
+## Languages
 
-1. Install [Quarto](https://quarto.org) and [R](https://www.r-project.org)
-2. Install required R packages (see `requirements.R`)
-3. Open `.qmd` files in RStudio, Positron or VS Code and click "Render"
+- **R + Quarto** for all main analyses and figures
+- **Python** for the preparation of the climatic extremes data
 
-## Reproducibility
+---
 
-All figures and results are generated through individual Quarto notebooks. Notebooks are self-contained and titled according to its output.
+## R Environment
 
-Each notebook will:
-- Load processed data from `data/processed/`
-- Perform analysis
-- Save outputs to `results/`
+See `code/notebooks/README.md` for how to run `.qmd` notebooks.
 
+---
+
+## Python Environment
+
+If needed, create the environment with:
+
+```bash
+conda env create -f environment.yml
+conda activate crop-extremes
