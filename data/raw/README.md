@@ -9,4 +9,4 @@ To request access:
 - Subject: "Request for ISIMIP3a crop model data - GGCMI validation study"
 - Include a short explanation of intended use
 
-Once granted, place the received files into this folder following the naming convention described in `../processed/README.md` or the code documentation.
+Once granted, place the received files into this folder following the naming convention used in the code documentation.
