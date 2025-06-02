@@ -27,6 +27,6 @@ cd GGCMI-validation
 
 ## License
 
-- Code is licensed under the [MIT License](LICENSE).
-- Processed data is licensed under [CC-BY 4.0](data/LICENSE).
+- Code and processed data is licensed under the [CC-BY 4.0](LICENSE).
+-  Raw data: Not publicly available; available on request.
 
