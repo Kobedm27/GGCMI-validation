@@ -18,4 +18,4 @@ All analyses were conducted in **R** using **Quarto notebooks (`.qmd`)**.
 3. Install required R packages:
    ```r
    install.packages(c("tidyverse", "terra", "sf", "lubridate", "patchwork", "ggtext", "arrow"))
-
+  ```
