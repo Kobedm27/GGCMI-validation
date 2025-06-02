@@ -20,8 +20,8 @@ Author(s) (2025). Global Gridded Crop Models Underestimate Yield Losses from Cli
 
 To reproduce the analysis:
 ```bash
-git clone https://github.com/yourusername/global-crop-extremes.git
-cd global-crop-extremes
+git clone https://github.com/Kobedm27/GGCMI-validation.git
+cd GGCMI-validation
 # Follow instructions in code/README.md
 ```
 
