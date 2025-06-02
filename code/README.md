@@ -8,14 +8,20 @@ All analyses were conducted in **R** using **Quarto notebooks (`.qmd`)**.
 
 ## Structure
 
-- `notebooks/`: All figures and results are generated through individual Quarto notebooks.
-  Each notebook is numbered and titled according to its output.
+- `notebooks/`: 
 
 ## Getting Started
 
-1. Install [Quarto](https://quarto.org/)
-2. Install [R](https://cran.r-project.org/)
-3. Install required R packages:
-   ```r
-   install.packages(c("tidyverse", "terra", "sf", "lubridate", "patchwork", "ggtext", "arrow"))
+1. Install [Quarto](https://quarto.org) and [R](https://www.r-project.org)
+2. Install required R packages (see `requirements.R`)
+3. Open `.qmd` files in RStudio, Positron or VS Code and click "Render"
+
+## Reproducibility
+
+All figures and results are generated through individual Quarto notebooks. Notebooks are self-contained and titled according to its output.
+
+Each notebook will:
+- Load processed data from `data/processed/`
+- Perform analysis
+- Save outputs to `results/`
 
