@@ -6,6 +6,6 @@ This project includes both R and Python code used to conduct the analysis in:
 
 ## Structure
 
-- `notebooks/`: **R + Quarto** notebooks used for main figures and analysis
+- `notebooks/`: **R + Quarto notebooks** used for main figures and analysis
 - `scripts/`: **Python scripts** for preprocessing of the climatic extremes data
 
