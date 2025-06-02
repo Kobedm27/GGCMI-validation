@@ -9,4 +9,3 @@ Each file is documented below:
 - `yields_cleaned.csv`: Gridded crop yield time series (1980–2020)
 - `extreme_events_mask.nc`: Binary mask of extreme heat/drought events by grid cell
 
-License: [MIT license](LICENSE)
