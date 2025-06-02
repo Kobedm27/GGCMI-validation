@@ -25,5 +25,5 @@ Once approved, you will receive instructions for securely downloading the data.
 ## License
 
 - Raw data: Restricted access, not licensed for redistribution
-- Processed data: Shared under the [CC BY 4.0 License](LICENSE)
+- Processed data: Shared under the [MIT License](LICENSE)
 
