@@ -1,4 +1,4 @@
-## DRY & WET FILTERING
+## COMPUTATION OF DRY AND WET EXTREME CLIMATE INDICATORS
 
 import numpy as np
 import xarray as xr
