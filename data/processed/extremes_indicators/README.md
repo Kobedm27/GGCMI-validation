@@ -11,7 +11,7 @@ from `code/scripts/indicators_drywet_aggr.py` (aggregated crop analysis for main
 - `FWD_aggr.nc` — Annual **frequency of extreme wet days** (days with precipitation > 95th percentile value)
 - `LDS_aggr.nc` — Annual **longest dry spell** (consecutive days with precipitation < 0.5th percentile value)
 - `LWS_aggr.nc` — Annual **longest wet spell** (consecutive days with precipitation > 95th percentile value)
-- `TPR_aggr.nc` — Annual **Total precipitation** over growing-season days 
+- `TPR_aggr.nc` — Annual **total precipitation** over growing-season days 
 
 
 ---
