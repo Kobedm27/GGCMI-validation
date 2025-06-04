@@ -13,7 +13,7 @@
 
 # Note: Indicators are not computed per crop. Instead, for each grid cell and year, 
 # we consider the union of growing season days across all crops present. These data 
-# are further used for the crop aggregated analysis presented in the main paper.
+# are further used for the crop aggregated analysis (see code/notebooks/main.qmd) presented in the main paper.
 
 # Output: gridded climate extreme indicators saved to data/processed/
 
@@ -371,8 +371,8 @@ def season_stat(climate, season_firr_dict, season_noirr_dict, cropdat):
 FDD, FWD, TPR, LDS, LWS = season_stat(precip_days, season_firr_dict, season_noirr_dict, cropdat_unique)
 
 ## 5. Save new datasets as netcdf files
-FDD.to_netcdf("FDD_aggr.nc")  
-FWD.to_netcdf("FWD_aggr.nc") 
-LDS.to_netcdf("LDS_aggr.nc") 
-LWS.to_netcdf("LWS_aggr.nc")  
-TPR.to_netcdf("TPR_aggr.nc") 
+FDD.to_netcdf("data/processed/FDD_aggr.nc")  # adapt the path according to where the repo is stored
+FWD.to_netcdf("data/processed/FWD_aggr.nc") 
+LDS.to_netcdf("data/processed/LDS_aggr.nc") 
+LWS.to_netcdf("data/processed/LWS_aggr.nc")  
+TPR.to_netcdf("data/processed/TPR_aggr.nc") 
