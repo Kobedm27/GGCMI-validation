@@ -1,5 +1,22 @@
 ## COMPUTATION OF DRY AND WET EXTREME CLIMATE INDICATORS
 
+# This script processes daily precipitation data from the GSWP3-W5E5 dataset to compute 
+# annual indicators of wet and dry climate extremes.
+
+# Indicators are calculated:
+# - Per calendar year
+# - At each grid cell where crops are grown
+# - Only using the subset of days within the year when at least one of the five main crops 
+#   (maize, soy, spring wheat, winter wheat, or rice) is typically grown at that location
+
+# The growing season periods are derived from crop- and land-use-specific calendars.
+
+# Note: Indicators are not computed per crop. Instead, for each grid cell and year, 
+# we consider the union of growing season days across all crops present. These data 
+# are further used for the crop aggregated analysis presented in the main paper.
+
+# Output: gridded climate extreme indicators saved to data/processed/
+
 import numpy as np
 import xarray as xr
 import pandas as pd 
