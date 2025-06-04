@@ -5,6 +5,6 @@ climate extreme indicators.
 
 ## Overview
 
-- crop_aggegated: contains indicator data for the main analysis of the paper.
-- crop_specific: contains indicator data for the crop-specific figures in the appendix of the paper.
+- `crop_aggegated`: contains indicator data for the main analysis of the paper.
+- `crop_specific`: contains indicator data for the crop-specific figures in the appendix of the paper.
 
