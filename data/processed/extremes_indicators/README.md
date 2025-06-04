@@ -5,6 +5,8 @@ climate extreme indicators.
 
 ## Overview
 
+The folder is organised in two sub-folders:
+
 - `crop_aggegated`: contains indicator data for the main analysis of the paper.
 - `crop_specific`: contains indicator data for the crop-specific figures in the appendix of the paper.
 
