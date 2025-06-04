@@ -2,7 +2,6 @@
 
 This folder contains the extreme climate indicator data files for the **main analysis of the paper** (aggregated over crops)
 
----
 
 ## Overview of data files
 
@@ -13,8 +12,6 @@ from `code/scripts/indicators_drywet_aggr.py`
 - `LWS_aggr.nc` — Annual **longest wet spell** (consecutive days with precipitation > 95th percentile value)
 - `TPR_aggr.nc` — Annual **total precipitation** over growing-season days 
 
-
----
 
 ## Notes
 
