@@ -371,8 +371,8 @@ def season_stat(climate, season_firr_dict, season_noirr_dict, cropdat):
 FDD, FWD, TPR, LDS, LWS = season_stat(precip_days, season_firr_dict, season_noirr_dict, cropdat_unique)
 
 ## 5. Save new datasets as netcdf files
-FDD.to_netcdf("data/processed/FDD_aggr.nc")  # adapt the path according to where the repo is stored
-FWD.to_netcdf("data/processed/FWD_aggr.nc") 
-LDS.to_netcdf("data/processed/LDS_aggr.nc") 
-LWS.to_netcdf("data/processed/LWS_aggr.nc")  
-TPR.to_netcdf("data/processed/TPR_aggr.nc") 
+FDD.to_netcdf("GGCMI-validation/data/processed/FDD_aggr.nc")  # adapt the path according to where the repo is stored
+FWD.to_netcdf("GGCMI-validation/data/processed/FWD_aggr.nc") 
+LDS.to_netcdf("GGCMI-validation/data/processed/LDS_aggr.nc") 
+LWS.to_netcdf("GGCMI-validation/data/processed/LWS_aggr.nc")  
+TPR.to_netcdf("GGCMI-validation/data/processed/TPR_aggr.nc") 
