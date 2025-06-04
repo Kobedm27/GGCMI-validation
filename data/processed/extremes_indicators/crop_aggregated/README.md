@@ -15,8 +15,8 @@ from `code/scripts/indicators_drywet_aggr.py`
 
 ## Notes
 
-- All indicators are computed per grid cell and calendar year.
+- All indicators are computed per gridcell and calendar year.
 - Only days during which **at least one major crop** is grown at a location (based on crop calendars) are included in the calculation.
-- Scripts used to generate these files begin with `indicators_` and end with `_aggr` and can be found in `code/scripts/`.
+- All data files are in **NetCDF format**.
 
 
