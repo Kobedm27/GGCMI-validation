@@ -4,18 +4,14 @@ This folder contains **Python scripts** used for preprocessing the climatic extr
 
 ## File Overview
 
-- `regrid_crop_yield.py` — Regrids crop yield data to a common spatial resolution
-- `merge_climate_fields.py` — Combines temperature and precipitation into a single dataset
-- `convert_netcdf_to_csv.py` — Converts selected NetCDF variables into tabular format for import into R
+- `indicators_drywet_aggr.py` — Extreme climate indicator computation for extreme dry and wet conditions (crop aggregated)
+- `indicators_hot_aggr.py` — Extreme climate indicator computation for extreme hot conditions (crop aggregated)
+- `indicators_drywet_crop.py` — Extreme climate indicator computation for extreme dry and wet conditions (crop specific)
+- `indicators_drywet_crop.py` - Extreme climate indicator computation for extreme hot conditions (crop specific)
 
-## Dependencies
+## Required python packages
+- `pyreadr` - Used to read .RData files from R in Python.
+- `numpy` - Used for numerical operations.
+- `xarray` - Used for handling labeled multi-dimensional arrays.
+- `pandas` - Used for data manipulation and analysis.
 
-Install the required Python packages with:
-
-```bash
-# Using pip
-pip install -r requirements.txt
-
-# Or using conda
-conda env create -f GGCMIval.yml
-conda activate GGCMIval
