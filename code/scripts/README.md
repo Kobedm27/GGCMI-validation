@@ -2,6 +2,19 @@
 
 This folder contains **Python scripts** used for preprocessing the climatic extremes data in support of the main R/Quarto-based analysis.
 
+## Crop Placeholder
+
+In all filenames and script names, `crop` is a placeholder and should be replaced with one of the following main crops:
+
+- `mai` - maize
+- `ri1` - first growing season rice
+- `ri2` - second growing season rice
+- `soy` - soy
+- `swh` - spring wheat
+- `wwh` - winter wheat
+
+For example, `indicators_drywet_mai.py` generates `FDD_mai.nc`, `TPR_mai.nc`, etc.
+
 ## File Overview
 
 - `indicators_drywet_aggr.py` — Extreme climate indicator computation for extreme dry and wet conditions (crop aggregated for main results)
