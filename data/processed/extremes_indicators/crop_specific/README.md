@@ -26,6 +26,9 @@ generated from `code/scripts/indicators_drywet_crop.py`
 - `LWS_crop.nc` — Annual **longest wet spell** (consecutive days with precipitation > 95th percentile value)
 - `TPR_crop.nc` — Annual **total precipitation** over growing-season days 
 
+generated from `code/scripts/indicators_hot_crop.py`
+- `FHD_crop.nc` — Annual **frequency of extreme hot days** (days with tasmax > 95th percentile value)
+- `LHS_crop.nc` — Annual **longest hot spell** (consecutive days with tasmax > 95th percentile value)
 
 ## Notes
 
