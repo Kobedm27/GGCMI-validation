@@ -1,4 +1,23 @@
-# HEAT FILTERING    
+## COMPUTATION OF HOT EXTREME CLIMATE INDICATORS
+
+# Define crop name here
+crop = "mai"  # options: mai, soy, ri1, ri2, swh, wwh
+
+# This script processes daily temperature (tasmax) data from the GSWP3-W5E5 dataset to compute 
+# annual indicators of hot climate extremes.
+
+# Indicators are calculated:
+# - Per calendar year
+# - At each grid cell where crops are grown
+# - Only using the subset of days within the year when the corresponding crop is grown
+
+# The growing season periods are derived from crop- and land-use-specific calendars.
+
+# These data are further used for the crop specific analysis
+# (see code/notebooks/main.qmd) presented in the appendix.
+
+# Output: gridded climate extreme indicators saved to 
+# GGCMI-validation/data/processed/extremes_indicators/extremes_indicators/crop_specific/
 
 import numpy as np
 import xarray as xr
@@ -6,7 +25,7 @@ import pandas as pd
 from datetime import datetime, timedelta 
 import pyreadr 
 
-## 1. Get the data and join them
+## 1. Get the temperature data and join them
 
 temp1 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/climate/atmosphere/obsclim/global/daily/historical/GSWP3-W5E5/gswp3-w5e5_obsclim_tasmax_global_daily_1981_1990.nc", engine='netcdf4')
 temp2 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/climate/atmosphere/obsclim/global/daily/historical/GSWP3-W5E5/gswp3-w5e5_obsclim_tasmax_global_daily_1991_2000.nc", engine='netcdf4')
@@ -17,20 +36,20 @@ temp_days = xr.concat([temp1, temp2, temp3, temp4], dim='time')
 
 ## 2. Bring in crop data and growing season data 
 
-# Load crop data (from R)
-cropdat= pyreadr.read_r("/p/projects/preview/Cluster_Testing/model_ready_data_othercrops.RData")["swh_dat"] # crop can be changed here
+# Load crop data (earlier processed in R as RData)
+cropdat = pyreadr.read_r("/p/projects/preview/Cluster_Testing/model_ready_data_othercrops.RData")[f"{crop}_dat"] 
 cropdat_unique = cropdat.drop_duplicates(subset = ["lon", "lat"])
 
 # Load growing seasons
-season_firr = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_swh_firr.nc") # Change crop accordingly
-season_noirr = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_swh_noirr.nc") # Change crop accordingly
+season_firr = xr.open_dataset(f"/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_{crop}_firr.nc")
+season_noirr = xr.open_dataset(f"/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_{crop}_noirr.nc")
 
-## 3. Define function to calulate longest hot period ("heatwave length")
-def heatwaves_length(array):
+## 3. Define function to calculate longest consecutive hot period 
+def extreme_length(array):
     # INPUT:
     # - Array where we want to find maximum length of consecutive hot days
     # OUTPUT:
-    # - Maximum length of heatwaves
+    # - Maximum length of hot days
 
     max_length = 0
     current_length = 0
@@ -45,7 +64,11 @@ def heatwaves_length(array):
 
 ## 4. Calculate growing season statistics
 
-# The following function will:
+# The following function will calculate the climate extreme indicators by carefully selecting the growing season days using ISIMIP´s crop calendars
+# and regrouping them in "growing season years" which can span 2 calendar years in the Southern Hemisphere. For these growing season days, 
+# a threshold climate value is calculated by the 95th percentile. All days above this value are considered extremely "hot". We count the frequency of 
+# such hot days for each growing season year and location and we also compute the length of the longest consecutive period of hot days for each 
+# growing season year and location. 
 
 
 def season_stat(climate, season_firr, season_noirr, cropdat):
@@ -53,10 +76,10 @@ def season_stat(climate, season_firr, season_noirr, cropdat):
       # - climate: xarray.Dataset with climate variable
       # - season_firr: full irrigation crop calendar xarray
       # - season_noirr: full rainfed crop calendar xarray
-      # - cropdat_uniaue: dataframe with locations where maize is grown and land use information in terms of irrigation or rainfed. Every row should be a unique location.
+      # - cropdat: dataframe with locations where <crop> is grown and land use information in terms of irrigation or rainfed. Every row should be a unique location.
       # OUTPUT:
-      # - hotdays_freq:
-      # - heatwaves:
+      # - FHD: xarray data array with the Frequency of extreme Hot Days for each location and growing season year
+      # - LHS: xarray data array with the longest period of consecutive hot days (Longest Hot Spell) for each location and growing season year
 
      # Extract the start and end days of the growing seasons
       start_day_firr = season_firr['planting_day']
@@ -71,19 +94,19 @@ def season_stat(climate, season_firr, season_noirr, cropdat):
       longitudes = np.unique(cropdat["lon"])
 
       # Initialize empty xarray data arrays 
-      hotdays_freq = xr.DataArray(
+      FHD = xr.DataArray(
        np.zeros((len(unique_years), len(latitudes), len(longitudes))),
        coords={"year": unique_years, "lat": latitudes, "lon": longitudes},
        dims=["year", "lat", "lon"]
         )
       
-      heatwaves = xr.DataArray(
+      LHS = xr.DataArray(
        np.zeros((len(unique_years), len(latitudes), len(longitudes))),
        coords={"year": unique_years, "lat": latitudes, "lon": longitudes},
        dims=["year", "lat", "lon"]
         )
     
-    # Iterate over rows of cropdata: different locations (gridcells) where maize is grown
+    # Iterate over rows of cropdata: different locations (gridcells) where <crop> is grown
       for index, row in cropdat.iterrows():
         lat = row['lat']
         lon = row['lon']
@@ -132,12 +155,12 @@ def season_stat(climate, season_firr, season_noirr, cropdat):
                 temp_binary_current = (climate_current_growing["tasmax"]>= temp_p95).astype(int)
                 # Count how many ones (hot days) we have in this year for the current location
                 hotdays_current = temp_binary_current.sum(dim = "time")
-                # Add the data to the initialised xarray data array
-                hotdays_freq.loc[current_year, lat, lon] = hotdays_current/total_days
+                # Add the data to the initialised xarray data array as a frequency
+                FHD.loc[current_year, lat, lon] = hotdays_current/total_days
 
-                # Apply the heatwaves_length function to get this statistic and add to data array 
-                heatwaves.loc[current_year, lat, lon] = xr.apply_ufunc(
-                    heatwaves_length,
+                # Apply the extreme_length function to get this statistic and add to data array 
+                LHS.loc[current_year, lat, lon] = xr.apply_ufunc(
+                    extreme_length,
                     temp_binary_current,
                     input_core_dims=[['time']],
                     vectorize=True,
@@ -156,28 +179,30 @@ def season_stat(climate, season_firr, season_noirr, cropdat):
             for year in unique_years:
                 current_year = year +1
                 if year == 2019: # Last year is not a comple growing season
-                    hotdays_freq.loc[year, lat, lon] = 0
-                    heatwaves.loc[year, lat, lon] = 0
+                    FHD.loc[year, lat, lon] = 0
+                    LHS.loc[year, lat, lon] = 0
                 else: 
+                    # Get current climate data 
                     climate_current = climate_loc.sel(time = climate_loc["time.year"]  == current_year)  # We discard the first year because incomplete growing season
+                    # Get climate data from previous year
                     climate_previous = climate_loc.sel(time = climate_loc["time.year"]  == year) 
                     dayofyear_current = climate_current["time"].dt.dayofyear
                     dayofyear_previous = climate_previous["time"].dt.dayofyear
                     total_days = (365 - start_day_loc +1) + end_day_loc # +1 to include the start day
-                    # Current growing season consists of end of pevious year and beginning of current year
-                    # Filter
+                    # growing season consists of end of pevious year and beginning of current year: keep two split in previous and current growing season days
                     climate_current_growing = climate_current.sel(time = dayofyear_current <= end_day_loc)
                     climate_previous_growing = climate_previous.sel(time = dayofyear_previous >= start_day_loc)
-
+                    # Threshold the selected days with the 95 percentile value (1 if tasmax is above threshold, otherwise 0)
                     temp_binary_current = (climate_current_growing["tasmax"]>= temp_p95)
                     temp_binary_previous = (climate_previous_growing["tasmax"] >= temp_p95)
                     hotdays_current = temp_binary_current.astype(int).sum(dim = "time")
                     hotdays_previous = temp_binary_previous.astype(int).sum(dim = "time")
-                    hotdays_freq.loc[current_year, lat, lon] = (hotdays_current + hotdays_previous)/total_days
+                    # Calculate frequency by combining both the hot days from the end of previous year and beginning of next year within growing season. Add to xarray data array
+                    FHD.loc[current_year, lat, lon] = (hotdays_current + hotdays_previous)/total_days
 
-                    # Apply the heatwaves_length function
-                    heatwaves.loc[current_year, lat, lon] = xr.apply_ufunc(
-                        heatwaves_length,
+                    # Apply the extreme_length function to get longest hot spell 
+                    LHS.loc[current_year, lat, lon] = xr.apply_ufunc(
+                        extreme_length,
                         xr.concat([temp_binary_previous, temp_binary_current], dim='time'),
                         input_core_dims=[['time']],
                         vectorize=True,
@@ -185,12 +210,13 @@ def season_stat(climate, season_firr, season_noirr, cropdat):
                         output_dtypes=[int]
                     )
 
-      return hotdays_freq, heatwaves
+      return FHD, LHS
 
 
-## 4. Perform main function 
-hotdays_freq, heatwaves = season_stat(temp_days, season_firr, season_noirr, cropdat_unique)
+## 5. Perform main function 
+FDD, LHS = season_stat(temp_days, season_firr, season_noirr, cropdat_unique)
 
-## 5. Save new datasets as netcdf files
-hotdays_freq.to_netcdf("hotdays_freq_swh.nc")  # change name according to crop
-heatwaves.to_netcdf("heatwaves_swh.nc")  # change name according to crop
+## 6. Save new datasets as netcdf files
+# adapt the path according to where the repo is stored
+FDD.to_netcdf(f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/FDD_{crop}.nc")
+LHS.to_netcdf(f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/LHS_{crop}.nc")

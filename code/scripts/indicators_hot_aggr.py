@@ -134,7 +134,7 @@ def season_stat(climate, season_firr_dict, season_noirr_dict, cropdat):
       # - climate: xarray dataset with climate variable
       # - season_firr: dictionary of full irrigation crop calendar xarray dataset
       # - season_noirr: dictionary of full rainfed crop calendar xarray dataset
-      # - cropdat: dataframe with locations where maize is grown and land use information in terms of irrigation or rainfed. Every row should be a unique location.
+      # - cropdat: dataframe with locations where crops are grown and land use information in terms of irrigation or rainfed. Every row should be a unique location.
       # OUTPUT:
       # - FHD: xarray data array with the Frequency of extreme Hot Days for each location and growing season year
       # - LHS: xarray data array with the longest period of consecutive hot days (Longest Hot Spell) for each location and growing season year

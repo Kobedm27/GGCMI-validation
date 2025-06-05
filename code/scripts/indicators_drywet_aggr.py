@@ -131,7 +131,7 @@ def season_stat(climate, season_firr_dict, season_noirr_dict, cropdat):
       # - climate: xarray dataset with climate variable
       # - season_firr: dictionary of full irrigation crop calendar xarray dataset
       # - season_noirr: dictionary of full rainfed crop calendar xarray dataset
-      # - cropdat: dataframe with locations where maize is grown and land use information in terms of irrigation or rainfed. Every row should be a unique location.
+      # - cropdat: dataframe with locations where crops are grown and land use information in terms of irrigation or rainfed. Every row should be a unique location.
       # OUTPUT:
       # - FDD: xarray data array with the Frequency of extreme Dry Days for each location and growing season year
       # - FWD: xarray data array with the Frequency of extreme Wet Days for each location and growing season year
