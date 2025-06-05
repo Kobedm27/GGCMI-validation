@@ -10,7 +10,7 @@ In all filenames and script names, `<crop>` is a placeholder and should be repla
 
 - `maize`
 - `rice1`
-- - `rice2`
+- `rice2`
 - `soy`
 - `spring_wheat`
 - `winter_wheat`
