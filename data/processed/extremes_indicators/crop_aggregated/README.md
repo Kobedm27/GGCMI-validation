@@ -11,8 +11,11 @@ generated from `code/scripts/indicators_drywet_aggr.py`
 - `FWD_aggr.nc` — Annual **frequency of extreme wet days** (days with precipitation > 95th percentile value)
 - `LDS_aggr.nc` — Annual **longest dry spell** (consecutive days with precipitation < 0.5th percentile value)
 - `LWS_aggr.nc` — Annual **longest wet spell** (consecutive days with precipitation > 95th percentile value)
-- `TPR_aggr.nc` — Annual **total precipitation** over growing-season days 
+- `TPR_aggr.nc` — Annual **total precipitation** over growing-season days
 
+generated from `code/scripts/indicators_hot_aggr.py`
+- `FHD_aggr.nc` — Annual **frequency of extreme hot days** (days with tasmax > 95th percentile value)
+- `LHS_aggr.nc` — Annual **longest hot spell** (consecutive days with tasmax > 95th percentile value)
 
 ## Notes
 
