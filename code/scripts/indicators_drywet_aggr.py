@@ -15,7 +15,8 @@
 # we consider the union of growing season days across all crops present. These data 
 # are further used for the crop aggregated analysis (see code/notebooks/main.qmd) presented in the main paper.
 
-# Output: gridded climate extreme indicators saved to data/processed/
+# Output: gridded climate extreme indicators saved to 
+# GGCMI-validation/data/processed/extremes_indicators/extremes_indicators/crop_aggregated/
 
 import numpy as np
 import xarray as xr
@@ -100,7 +101,7 @@ season_noirr_list = [season_noirr_mai, season_noirr_ri1, season_noirr_ri2, seaso
 season_firr_dict = {crop: season for crop, season in zip(crop_names, season_firr_list)}
 season_noirr_dict = {crop: season for crop, season in zip(crop_names, season_noirr_list)}
 
-## 3. Define function to calulate longest consecutive wet/dry period 
+## 3. Define function to calculate longest consecutive wet/dry period 
 def extreme_length(array):
     # INPUT:
     # - Array where we want to find maximum length of consecutive dry/wet days
@@ -121,7 +122,7 @@ def extreme_length(array):
 
 # The following function will calculate the climate extreme indicators by carefully selecting the growing season days using ISIMIP´s crop calendars
 # and regrouping them in "growing season years" which can span 2 calendar years in the Southern Hemisphere. For these growing season days, 
-# a threshold climate value is calculated by the 95th/5th percentile. All days above/below this value are considered "wet"/"dry". We count the frequency of 
+# a threshold climate value is calculated by the 95th/5th percentile. All days above/below this value are considered extremely "wet"/"dry". We count the frequency of 
 # wet/days days for each growing season year and location and we also compute the length of the longest consecutive period of wet/dry days for each 
 # growing season year and location. 
 
@@ -367,12 +368,12 @@ def season_stat(climate, season_firr_dict, season_noirr_dict, cropdat):
       return FDD, FWD, TPR, LDS, LWS
 
 
-## 4. Perform main function 
+## 5. Perform main function 
 FDD, FWD, TPR, LDS, LWS = season_stat(precip_days, season_firr_dict, season_noirr_dict, cropdat_unique)
 
-## 5. Save new datasets as netcdf files
-FDD.to_netcdf("GGCMI-validation/data/processed/FDD_aggr.nc")  # adapt the path according to where the repo is stored
-FWD.to_netcdf("GGCMI-validation/data/processed/FWD_aggr.nc") 
-LDS.to_netcdf("GGCMI-validation/data/processed/LDS_aggr.nc") 
-LWS.to_netcdf("GGCMI-validation/data/processed/LWS_aggr.nc")  
-TPR.to_netcdf("GGCMI-validation/data/processed/TPR_aggr.nc") 
+## 6. Save new datasets as netcdf files
+FDD.to_netcdf("GGCMI-validation/data/processed/extremes_indicators/crop_aggregated/FDD_aggr.nc")  # adapt the path according to where the repo is stored
+FWD.to_netcdf("GGCMI-validation/data/processed/extremes_indicators/crop_aggregated/FWD_aggr.nc") 
+LDS.to_netcdf("GGCMI-validation/data/processed/extremes_indicators/crop_aggregated/LDS_aggr.nc") 
+LWS.to_netcdf("GGCMI-validation/data/processed/extremes_indicators/crop_aggregated/LWS_aggr.nc")  
+TPR.to_netcdf("GGCMI-validation/data/processed/extremes_indicators/crop_aggregated/TPR_aggr.nc") 
