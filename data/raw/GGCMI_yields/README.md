@@ -2,7 +2,7 @@
 
 This folder is intended to hold the raw crop model output data from the ISIMIP3a simulation project, which are required to reproduce the analysis in this repository.
 
-Due to size restrictions, these files are **not included** in the GitHub repository. Instead, users must download the data manually from the official ISIMIP data portal.
+These data files are **not included** in the GitHub repository. Instead, users must download the data manually from the official ISIMIP data portal.
 
 ## Data access instructions 
 
