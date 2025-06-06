@@ -1,6 +1,6 @@
 # Raw input data: ISIMIP3a crop yield simulations
 
-This folder is intended to hold the raw crop model output data from the ISIMIP3a simulation project, which are required to reproduce the analysis in this repository.
+This folder is intended to hold the raw gridded crop model output data from the ISIMIP3a simulation project, which are required to reproduce the analysis in this repository.
 
 These data files are **not included** in the GitHub repository. Instead, users must download the data manually from the official ISIMIP data portal.
 
@@ -9,7 +9,7 @@ These data files are **not included** in the GitHub repository. Instead, users m
 Please access the required data files here:
 [https://data.isimip.org/search/tree/ISIMIP3a/OutputData/agriculture/](https://data.isimip.org/search/tree/ISIMIP3a/OutputData/agriculture/)
 
-All files are available in **NetCDF format**.
+All files are available in **NetCDF format** for a resolution of 0.5°. 
 
 1. Select all available crop models
 2. Select the correct climate input data: **GSWP3-W5E5**
