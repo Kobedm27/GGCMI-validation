@@ -21,6 +21,7 @@ All files are available in **NetCDF format**.
 8. Make sure all required files are selected
 9. Select **Mask only land data** in the MASK AREA box
 10. Click on **download file** which creates a zip file with all data in your downloads
+11. After downloading, organize the files into the designated folder structure (one subfolder per crop) inside the repository at `data/raw/GGCMI_yields`:
 
 ## File naming convention
 
@@ -44,25 +45,3 @@ This indicates:
 
 For full ISIMIP3a simulation experiment details and explanation of the specifiers, see the [ISIMIP3a protocol documentation](https://protocol.isimip.org/#/ISIMIP3a/agriculture) 
 and the corresponding paper: [Frieler et al. (2024)](https://doi.org/10.5194/gmd-17-1-2024)
-
-## Required File Structure
-
-After downloading, organize the data into the following structure here within the repository `data/raw/`:
-
-data/raw/
-├── mai/
-│ ├── acea_gswp3-w5e5_obsclim_2015soc_default_yield-mai-firr_global_annual-gs_1901_2016.nc
-│ ├── acea_gswp3-w5e5_obsclim_2015soc_default_yield-mai-noirr_global_annual-gs_1901_2016.nc
-│ ├── lpjml_gswp3-w5e5_obsclim_2015soc_default_yield-mai-firr_global_annual-gs_1901_2016.nc
-│ ├── lpjml_gswp3-w5e5_obsclim_2015soc_default_yield-mai-noirr_global_annual-gs_1901_2016.nc
-│ └── ...
-├── ri1/
-│ ├── ...
-├── ri2/
-│ ├── ...
-├── soy/
-│ ├── ...
-├── swh/
-│ ├── ...
-├── wwh/
-│ ├── ...
