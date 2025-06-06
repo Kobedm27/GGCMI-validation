@@ -1,4 +1,4 @@
-# Raw input data: ISIMIP3a Crop Yield Simulations
+# Raw input data: ISIMIP3a crop yield simulations
 
 This folder is intended to hold the raw crop model output data from the ISIMIP3a simulation project, which are required to reproduce the analysis in this repository.
 
