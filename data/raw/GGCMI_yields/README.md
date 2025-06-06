@@ -18,7 +18,7 @@ All files are available in **NetCDF format**.
 5. Select the correct crops: **maize, rice (first growing season), rice (second growing season), soy, spring wheat, winter wheat**
 6. Per specific model and crop there should be two distinct data files (one with **firr** in the name, the other with **noirr**). Select both. 
 7. Click on **configure download**
-8. Make sure all required files are selected
+8. Make sure all required files are selected. Note that not all crops are available for each model. 
 9. Select **Mask only land data** in the MASK AREA box
 10. Click on **download file** which creates a zip file with all data in your downloads
 11. After downloading, organize the files into the designated folder structure (one subfolder per crop) inside the repository at `data/raw/GGCMI_yields`:
