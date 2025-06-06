@@ -11,7 +11,7 @@ Please access the required data files here:
 
 All files are available in **NetCDF format**.
 
-1. Select all available GGCMI models
+1. Select all available crop models
 2. Select the correct climate input data: **GSWP3-W5E5**
 3. Select the correct experiment specifier: **obsclim**
 4. Select the correct output variable: **yield**
