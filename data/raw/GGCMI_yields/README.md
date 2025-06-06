@@ -43,5 +43,5 @@ This indicates:
 - `global_annual-gs`: global annual output based on growing-season.
 - `1901_2016`: simulation time span.
 
-For full ISIMIP3a simulation experiment details and explanation of the specifiers, see the [ISIMIP3a protocol documentation](https://protocol.isimip.org/#/ISIMIP3a/agriculture) 
+For full ISIMIP3a simulation experiment details and explanation of the specifiers, see the [ISIMIP3a protocol](https://protocol.isimip.org/#/ISIMIP3a/agriculture) 
 and the corresponding paper: [Frieler et al. (2024)](https://doi.org/10.5194/gmd-17-1-2024)
