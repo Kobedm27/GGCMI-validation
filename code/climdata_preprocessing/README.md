@@ -1,6 +1,6 @@
-# Python Scripts
+# Computation of climate extremes indicators
 
-This folder contains **Python scripts** used for preprocessing the climatic extremes data in support of the main R/Quarto-based analysis.
+This folder contains **Python scripts** used for computing netcdf data files with climate extremes indicators from the GSWP3-W5E5 temperature and precipitation data. 
 
 ## Crop Placeholder
 
