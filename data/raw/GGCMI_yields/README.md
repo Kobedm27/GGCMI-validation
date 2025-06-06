@@ -15,8 +15,8 @@ All files are available in **NetCDF format**.
 2. Select the correct climate input data: **GSWP3-W5E5**
 3. Select the correct experiment specifier: **obsclim**
 4. Select the correct output variable: **yield**
-5. Select the correct crops: **Maize, Rice (first growing season), Rice (second growing season), soy, spring wheat, winter wheat**
-6. Per specific model and crop there should be two distinct data files (one with **firr** in the name, the other with **noirr**)
+5. Select the correct crops: **maize, rice (first growing season), rice (second growing season), soy, spring wheat, winter wheat**
+6. Per specific model and crop there should be two distinct data files (one with **firr** in the name, the other with **noirr**). Select both. 
 7. Click on **configure download**
 8. Make sure all required files are selected
 9. Select **Mask only land data** in the MASK AREA box
