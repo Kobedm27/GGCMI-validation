@@ -6,7 +6,7 @@ The data is **not included** in the GitHub repository. To reproduce the results 
 
 ## Download Instructions
 
-The required files can be downloaded from the ISIMIP repository:[https://data.isimip.org/search/tree/ISIMIP3a/](https://data.isimip.org/search/tree/ISIMIP3a/InputData/)
+The required files can be downloaded from the ISIMIP repository: [https://data.isimip.org/search/tree/ISIMIP3a/](https://data.isimip.org/search/tree/ISIMIP3a/InputData/)
 
 ### Steps:
 
