@@ -12,7 +12,7 @@ Author(s) (2025). Global Gridded Crop Models Underestimate Yield Losses from Cli
 ## Contents
 
 - `code/`: Scripts and notebooks for data processing and analysis
-- `data/`: Processed data used in the study (raw data access instructions provided)
+- `data/`: Data used in the study (raw data access instructions provided)
 - `results/`: Final figures and tables
 - `paper/`: Manuscript and supplementary materials
 
