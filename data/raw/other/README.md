@@ -11,7 +11,7 @@ The required files can be downloaded from the ISIMIP repository: [https://data.i
 ### Steps:
 
 1. Select first the [land-use data](https://data.isimip.org/search/tree/ISIMIP3a/InputData/socioeconomic/landuse/2015soc/landuse-15crops/).
-2. Then also select the [crop calendars](https://data.isimip.org/search/tree/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3/). You only need to select the calendars for **mai, ri1, ri2, wwh, swh and soy**. Note that for each crop there are two distinct calendars, one for full irrigation simulations (**firr**) and one for no irrigation runs (**noirr**).  
+2. Then also select the [crop calendars](https://data.isimip.org/search/tree/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3/). You only need to select the calendars for **mai, ri1, ri2, wwh, swh and soy**. Note that for each crop there are two distinct calendars needed, one for full irrigation simulations (**firr**) and one for no irrigation runs (**noirr**).  
 3. Click on **configure download**
 4. Select **Mask only land data** in the MASK AREA box
 5. Click on **download file** which creates a zip file with all data in your downloads
