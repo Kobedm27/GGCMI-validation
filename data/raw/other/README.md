@@ -23,6 +23,6 @@ Outputs are always provided in **NetCDF format** with a resolution of 0.5° on a
 
 The land-use data describes gridded harvest areas for the corresponding crops and irrigation management fixed for the year of 2015. We use these data to integrate the two different simulations (noirr and firr) resulting in one yield measure taking into account the relative share of irrigated and no-irrigated harvest areas for each crop. For more information on the land-use data we refer to the [ISIMIP website](https://data.isimip.org/10.48364/ISIMIP.571261.3).
 
-The crop calendar data describes for the corresponding crops and irrigation management the typical plantation and harvesting dates for each gridcell. We use these data for the computation of the climate extremes indicators during the corresponding growing season. For more information on the crop calendar data we refer to [zenodo](https://zenodo.org/records/5062513).
+The crop calendar data describes for the corresponding crops and irrigation management the typical plantation and harvesting dates for each gridcell fixed for the year of 2015. We use these data for the computation of the climate extremes indicators during the corresponding growing season. For more information on the crop calendar data we refer to [zenodo](https://zenodo.org/records/5062513).
 
 
