@@ -2,7 +2,7 @@
 
 This folder is intended to store additional ISIMIP3a input data used to process the crop data in our study, including: **a country mask**, **a land-use dataset** and **crop-specific growing season calendars**. 
 
-The data is **not included** in the GitHub repository. To reproduce the results of the analysis the required data files need to be downloaded manually. 
+The land-use and crop calendar data is **not included** in the GitHub repository. To reproduce the results of the analysis the required data files need to be downloaded manually. 
 
 ## Download Instructions
 
