@@ -9,7 +9,7 @@ format:
 editor: visual
 ---
 
-::: {.callout-note title="Steps" icon="false"}
+::: {.callout-note title="Overview" icon="false"}
 This notebook will guide you through the steps and code to prepare the ISIMIP3a data in R. The following steps will be handled:
 
 1.  Country ID assignment and cell area calculation for each gridcell
