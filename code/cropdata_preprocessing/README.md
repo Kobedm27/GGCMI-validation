@@ -1,4 +1,4 @@
-# Code for preprocessing the benchmark and simulated crop yield data
+# Code for preprocessing benchmark and simulated crop yield data
 
 This folder contains the full pipeline for preprocessing crop yields from both simulations and benchmark datasets. The process is divided into three main steps, which should be run in order:
 
