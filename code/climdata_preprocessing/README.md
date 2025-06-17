@@ -1,6 +1,6 @@
 # Computation of climate extremes indicators
 
-This folder contains **Python scripts** used for computing netcdf data files with climate extremes indicators from the GSWP3-W5E5 temperature and precipitation data. 
+This folder contains **Python scripts** used for computing netcdf data files with climate extremes indicators from the GSWP3-W5E5 temperature and precipitation data. Be aware that it is necessary to first preprocess the crop data if not done yet.
 
 ## Crop Placeholder
 
