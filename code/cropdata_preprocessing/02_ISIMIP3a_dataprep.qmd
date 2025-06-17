@@ -1,0 +1,449 @@
+---
+title: "ISIMIP3a Data Preparation"
+format: 
+ html:
+    code-fold: true
+    code-summary: "Show the code"
+    toc: true
+    self-contained: true
+editor: visual
+---
+
+::: {.callout-note title="Steps" icon="false"}
+This notebook will guide you through the steps and code to prepare the ISIMIP3a data in R. The following steps will be handled:
+
+1.  Country ID assignment and cell area calculation for each gridcell
+
+2.  Crop area calculation with a gridded land-use map
+
+3.  Getting the ISIMIP3a yield data into information tables summarizing the different model runs
+
+4.  Extracting the data from the ISIMIP3a netcdf files and structuring them in R compatible dataframes. Additionally, also calculate nationally aggregated yields.
+
+The following data files are needed:
+
+-   124 netcdf files containing both irrigated and not irrigated simulations for all 13 models ran for 6 crop types: maize, rice1, rice2, soy, spring wheat and winter wheat. The data files are stored in separate crop folders. Note: not all models were run for all crops and are publicly available on the online ISIMIP repository.
+
+-   Country mask (provided in the repository)
+
+-   ISIMIP3a land use data publicly available on the online ISIMIP repository
+
+The following data outputs are produced and stored after running the notebook:
+
+-   `tgrid_ISIMIP_ctrs.RData` and `lonlat_ISIMIP_ctrs.RData`: matrices with country information per gridcell.
+
+-   `LU_list.RData`: land use information per gridcell.
+
+-   `<model>_<crop>.RData`: per model and crop combination different R dataframes containing the extracted netcdf data.
+:::
+
+Libraries needed:
+
+```{r}
+library(ncdf4)
+library(stringr)
+```
+
+Change to the correct location of the repository on your computer:
+
+```{r}
+# Base path to the repository
+repo_path <- "/Users/username/Documents/my-project"  # Change this accordingly
+
+# Set working directory to the repo path (optional)
+# setwd(repo_path)
+```
+
+# Country ID assignment and cell area
+
+First of all we need to assign for each gridcell a country ID indicating to which country the gridcell belongs. We use the country-mask provided by ISIMIP3a to do so.
+
+```{r}
+# Construct the full path to the NetCDF file
+country_mask_path <- file.path(repo_path, "GGCMI-validation", "data", "raw", "other", "countrymasks.nc")
+
+# Open the NetCDF file
+ctr.bin <- ncdf4::nc_open(filename = country_mask_path)
+
+# Optional: check contents
+# print(ctr.bin)  226 variables, for each country one variable
+```
+
+The country mask contains 214 countries.
+
+Then we extract the ISO country ID´s from each country.
+
+```{r}
+var.names=names(ctr.bin$var)
+var.iso=gsub(x=var.names, pattern="m_", replacement="", fixed=TRUE)
+```
+
+Now we make a matrix "lonlat" where every row is a gridcell. For every gridcell we have the longitude and latitude coordinates in the first 2 columns. The next 214 columns represent all the countries. If a gridcell lies in a specific country, we assign the value 1 for this country column, for all the other countries where it does not belong a 0.
+
+```{r}
+# Create the matrix
+lon=ncvar_get(ctr.bin,"lon")
+lat=ncvar_get(ctr.bin,"lat")
+lonlat <- as.matrix(expand.grid(lon,lat))
+
+# Add the countries 
+lonlat=cbind(lonlat, matrix(NA, nrow=nrow(lonlat), ncol=length(var.names)))
+colnames(lonlat)=c("lon", "lat", var.iso)
+
+for(i in 1:length(var.names)){
+	xdata=ncvar_get(ctr.bin, var.names[i])
+	xdata_long=matrix(xdata, prod(dim(xdata)[1:2]))
+	lonlat[, 2+i]=xdata_long
+}
+
+lonlat=as.data.frame(lonlat)
+```
+
+Next, we assign one country ID per gridcell in a new column "ctr". If the grid cell is not part of any country we assign a "0" value. If the gridcell corresponds to more than 1 country, we give it an NA value.
+
+```{r}
+country_cols <- names(lonlat)[3:216]
+# Add country ID column
+lonlat$ctr <- apply(lonlat[, country_cols], 1, function(row) {
+    num_countries <- sum(row == 1)
+    if (num_countries == 0) {
+      return("0") # No country assignment 
+    } else if (num_countries == 1) {
+      return(country_cols[which(row == 1)]) # 1 unique country assignment
+    } else {
+      return(NA_character_) # cell is part of two countries 
+    }
+  })
+```
+
+We only want one country assignment per cell so we have to check which cells have two countries.
+
+```{r}
+which(is.na(lonlat$ctr))		
+```
+
+There are 16 cells with 2 countries. For those cells we have to resolve the issue manually and pick only one country.
+
+```{r}
+lonlat$ctr[68044]="AND"		
+lonlat$ctr[85481]=0				# between China + India. We omit this cell. 
+lonlat$ctr[93808]="BHS"		
+lonlat$ctr[94525]="BHS"
+lonlat$ctr[96692]="BHS"
+lonlat$ctr[103144]="BLZ"
+lonlat$ctr[103863]="BLZ"
+lonlat$ctr[103864]="BLZ"
+lonlat$ctr[103911]="VIR"
+lonlat$ctr[104583]="BLZ"
+lonlat$ctr[105303]="BLZ"
+lonlat$ctr[106023]="BLZ"
+lonlat$ctr[110398]="VCT"
+lonlat$ctr[126766]="KIR"
+lonlat$ctr[146607]="COM"
+lonlat$ctr[158876]="MUS"
+```
+
+We can get rid of the individual country columns and just keep the latitudes, longitudes and country ID´s per cell.
+
+```{r}
+lonlat=lonlat[, c("lon", "lat", "ctr")] 
+lonlat=lonlat[order(lonlat$lon, lonlat$lat), ]
+```
+
+Additionally, we also calculate the area of every cell.
+
+```{r}
+cellwidth=6371000.785*pi/180 			# earthradius [m] times Pi
+cellarea=(cellwidth*0.5)*(cellwidth*0.5)*cos(lonlat$lat/180*pi) # replace grid[, 2] with lat/long those ranging from -90 to 90
+lonlat$cellarea=cellarea
+```
+
+As last step we can subset the data and only keep the cells with assigned countries. So we omit all oceans and Antarctica cells. We call this subset tgrid_ctr.
+
+```{r}
+tgrid=lonlat[lonlat$ctr!=0, ]		
+tgrid=tgrid[order(tgrid$lon, tgrid$lat), ]
+tgrid_ctr=sort(unique(tgrid$ctr))
+```
+
+Let´s save these 2 grids for later purpose.
+
+```{r}
+# Construct paths relative to the repository
+output_dir <- file.path(repo_path, "GGCMI-validation", "data", "processed", "other")
+
+# Save the lonlat and tgrid objects
+save(lonlat, file = file.path(output_dir, "lonlat_ISIMIP_ctrs.RData"))
+save(tgrid,  file = file.path(output_dir, "tgrid_ISIMIP_ctrs.RData"))
+```
+
+# Crop area calculation (land-use information)
+
+In the next step we calculate for each gridcell the crop area for the different crop types. For this purpose, we use the (15 crops downscaled) land use data from LUH2 v2h which was used as input for the ISIMIP3a model runs.
+
+```{r}
+# Construct the path to the LU (land use) NetCDF file
+LU_path <- file.path(
+  repo_path,
+  "GGCMI-validation", "Data", "Raw", "other",
+  "landuse-15crops_2015soc_annual_1901_2021.nc")
+
+# Open the NetCDF file
+LU <- ncdf4::nc_open(filename = LU_path)
+
+# extract coordinates
+lon.LU=ncvar_get(LU,"lon")
+lat.LU=ncvar_get(LU,"lat")
+lonlat.LU <- as.matrix(expand.grid(lon.LU, lat.LU))
+```
+
+To calculate the crop area for each gridcell, we need to consider both the land share allocated to the specific crop and the irrigation management in that cell. We use the cell area that we calculated earlier in the process. Since our analysis focuses on the 2015_soc experiment, where models are expected to maintain land use consistent with the state in 2015 throughout the time period, we only consider land use data from the year 2015.
+
+The code follows a similar approach to the one used for assigning country IDs. We multiply the land share of the crop and irrigation management in each cell by the corresponding cell area. The resulting dataframes, containing the crop area for each grid cell, are stored in the "LU_list".
+
+```{r}
+vars = c("maize_irrigated", "maize_rainfed", "oil_crops_soybean_irrigated", "oil_crops_soybean_rainfed", "rice_irrigated", "rice_rainfed", "temperate_cereals_irrigated", "temperate_cereals_rainfed")
+
+LU_list = c()
+
+start_LU = "1901"
+end_LU = "2021"
+
+
+for (var in vars){
+  # get the actual data
+  target=var
+  xdata=ncvar_get(LU, target)								
+  fillvalue=ncatt_get(LU, target, "_FillValue") 
+  unitvalue=ncatt_get(LU, target, "units")		# in %
+  xdata[xdata==fillvalue$value] <- NA				# replace fill values with NAs
+  # restructure the 3d array of dimensions (x,y,z) to 2d array of (x*y, z)
+  xdata_long=matrix(xdata, prod(dim(xdata)[1:2]), dim(xdata)[3])		
+  xdata_long=as.data.frame(cbind(lonlat.LU, xdata_long))  
+  colnames(xdata_long)=c("lon", "lat", start_LU:end_LU)
+  xdata_long=xdata_long[order(xdata_long$lon, xdata_long$lat),] 
+  # subset cells to tgrid countries 
+  xdata_long=xdata_long[lonlat$ctr%in%tgrid_ctr, ] 
+  # Subset cells to only year 2015 for 2015_soc experiment 
+  xdata_long = xdata_long[, c("lon", "lat", "2015")]
+  # Determine crop area
+  xdata_long_crop=xdata_long
+  xdata_long_crop[, 3]= xdata_long[, 3]*tgrid$cellarea	 
+  
+  # Create a name for the data frame based on the variable
+  data_frame_name <- paste("LU_", target, sep = "")
+  
+  # Assign the data frame to the list
+  LU_list[[data_frame_name]] <- xdata_long_crop  
+
+}
+
+# Save the data in the repository
+save(LU_list,file.path(output_dir, "LU_list.RData"))
+```
+
+# Creating model information tables
+
+First we collect the names of the nc files in all the crop folders. Note that we use the calendar adjusted model runs. This step needs to be done first and is handled in a separate script in the repository.
+
+```{r}
+# Define the base directory 
+isimip_base <- file.path(
+  repo_path,
+  "GGCMI-validation", "data", "processed", "GGCMI_calendar_adjusted"
+)
+
+# List NetCDF files for each crop type
+outputs_mai  <- list.files(file.path(isimip_base, "mai"), pattern = "nc")
+outputs_ri1  <- list.files(file.path(isimip_base, "ri1"), pattern = "nc")
+outputs_ri2  <- list.files(file.path(isimip_base, "ri2"), pattern = "nc")
+outputs_soy  <- list.files(file.path(isimip_base, "soy"), pattern = "nc")
+outputs_swh  <- list.files(file.path(isimip_base, "swh"), pattern = "nc")
+outputs_wwh  <- list.files(file.path(isimip_base, "wwh"), pattern = "nc")
+```
+
+Then, we create 6 tables that contain all the different file paths split for different variables in the path. The tables summarise the information of all the simulations done for each crop and can be used later. We use a loop to go over all crops and store the information tables.
+
+```{r}
+crops <- c("mai", "ri1", "ri2", "soy", "swh", "wwh")
+
+info_list <- list()
+
+for (crop in crops) {
+  outputs <- get(paste("outputs_", crop, sep = ""))
+  
+  info_df <- as.data.frame(matrix(unlist(strsplit(outputs, split="_", fixed=TRUE)), nrow=length(outputs), byrow=TRUE))
+  info_df[,10] <- gsub(x=info_df[,10], pattern=".nc", replacement="", fixed=TRUE)
+  colnames(info_df) <- c("model", "climate", "obsclim", "soc", "default", "variable", "global", "annual", "startyear", "endyear", "calendar")  # Change if filenames of the model runs are modified
+  info_df$startyear <- as.numeric(as.character(info_df$startyear))
+  info_df$endyear <- as.numeric(info_df$endyear)
+  
+  info_list[[paste("info_", crop, sep = "")]] <- info_df
+}
+```
+
+Now we can store the names of all models for each crop in a list and check which models are available for each crop.
+
+```{r}
+models_mai=sort(as.character(unique(info_list$info_mai$model)))
+models_ri1=sort(as.character(unique(info_list$info_ri1$model)))
+models_ri2=sort(as.character(unique(info_list$info_ri2$model)))
+models_soy=sort(as.character(unique(info_list$info_soy$model)))
+models_swh=sort(as.character(unique(info_list$info_swh$model)))
+models_wwh=sort(as.character(unique(info_list$info_wwh$model)))
+
+crops_mai=sort(as.character(unique(str_extract(info_list$info_mai$variable, "(?<=-)\\w+(?=-)"))))
+```
+
+rice1 does not have simplace-lintul5 simulations, rice2 does not have crover and simplace-lintul5 simulations, winter wheat does not have cygma1p74 simulations.
+
+# ISIMIP3a data extraction and structuring
+
+To prepare model outputs for further analysis, we code a nested loop that iterates through all crops and their respective models. Each crop model's netCDF files are opened to extract yield data. Both fully irrigated and fully rainfed runs' outputs are transformed into R compatible dataframes, with each year represented as a column and each lon-lat combination (individual gridcell) as a row.
+
+We then filter the data to retain only the locations corresponding to the land masses on the tgrid (excluding Antarctica). The yield values for each year and location are multiplied by the corresponding crop area for that location in 2015. This results in the production per grid cell for both irrigated and rainfed model versions.
+
+Additionally, we aggregate the production by summing over all the production values and area values of the gridcells in each country from the tgrid. The sums of the irrigated and rainfed annual national production values are then divided by the sum of the irrigated and rainfed crop areas for 2015 to get national yield values. These were not used in the main analysis but are useful for a quick exploration of the data.
+
+```{r, eval = FALSE}
+for (crop in crops) {  # Loop through each crop
+  
+  # Construct the output list name based on the current crop
+  current_list_name <- paste("models_", crop, sep = "")
+  current_list <- get(current_list_name)
+  current_outputs_name <- paste("outputs_", crop, sep = "")
+  current_outputs <- get(current_outputs_name)
+  current_info <- info_list[[paste("info_", crop, sep = "")]]
+  
+  # Create another name based on the crop for accessing the LU_list later 
+  if (crop == "ri1" | crop == "ri2") {
+    LU_crop <- "rice"
+  } else if (crop == "wwh" | crop == "swh") {
+    LU_crop <- "temperate_cereals"
+  } else if (crop == "soy") {
+    LU_crop <- "oil_crops_soybean"
+  } else {
+    LU_crop <- "maize"
+  }
+  
+  for (model in current_list) {  # Loop through each model available for the crop
+
+    x <- which(current_info$model == model)
+
+    # Extract yield + calculate production for irrigated
+    nc_file_path_irr <- file.path(
+          repo_path,
+          "ISIMIP3a validation", "data", "processed", "GGCMI_calendar_adjusted",
+          crop,
+          current_outputs[x][1]   # Get the irrigated file
+          )
+
+    # Open the NetCDF file
+    yld <- ncdf4::nc_open(filename = nc_file_path_irr)
+
+    target <- unique(current_info$variable)[1]
+
+    # Extract lon and lat
+    xlon <- ncvar_get(yld, "lon")
+    xlat <- ncvar_get(yld, "lat")
+    xlonlat <- as.matrix(expand.grid(xlon, xlat))
+
+    # Get yield data
+    xdata <- ncvar_get(yld, target)
+    fillvalue <- ncatt_get(yld, target, "_FillValue")
+    xdata[xdata == fillvalue$value] <- NA
+    yld_long_irr <- matrix(xdata, prod(dim(xdata)[1:2]), dim(xdata)[3])
+    
+    # Restructure yield data
+    yld_long_irr <- as.data.frame(cbind(xlonlat, yld_long_irr))
+    colnames(yld_long_irr)[1:2] <- c("lon", "lat")  
+    yld_long_irr <- yld_long_irr[order(yld_long_irr$lon, yld_long_irr$lat), ]
+    yld_long_irr <- yld_long_irr[lonlat$ctr %in% tgrid_ctr, ]  # Subset to tgrid
+    
+    # Multiply yield by irrigated crop area for 2015      
+    irrigated_LU_list <- LU_list[[paste("LU_", LU_crop, "_irrigated", sep = "")]]
+    prod_irr <- yld_long_irr[, 3:ncol(yld_long_irr)] * irrigated_LU_list$`2015` 
+
+    # Extract yield + calculate production for rainfed
+    nc_file_path_noirr <- file.path(
+          repo_path,
+          "ISIMIP3a validation", "data", "processed", "GGCMI_calendar_adjusted",
+          crop,
+          current_outputs[x][2]   # Get the rainfed file
+          )
+
+    # Open the NetCDF file
+    yld <- ncdf4::nc_open(filename = nc_file_path_noirr)
+    
+    target <- unique(current_info$variable)[2]
+
+    # Extract lon and lat
+    xlon <- ncvar_get(yld, "lon")
+    xlat <- ncvar_get(yld, "lat")
+    xlonlat <- as.matrix(expand.grid(xlon, xlat))
+    
+    # Get yield data
+    xdata <- ncvar_get(yld, target)
+    xdata[xdata == fillvalue$value] <- NA
+    yld_long_rain <- matrix(xdata, prod(dim(xdata)[1:2]), dim(xdata)[3])
+    
+    # Restructure yield data
+    yld_long_rain <- as.data.frame(cbind(xlonlat, yld_long_rain))
+    colnames(yld_long_rain)[1:2] <- c("lon", "lat")  
+    yld_long_rain <- yld_long_rain[order(yld_long_rain$lon, yld_long_rain$lat), ]
+    yld_long_rain <- yld_long_rain[lonlat$ctr %in% tgrid_ctr, ]
+
+    # Multiply yield by rainfed crop area for 2015
+    rainfed_LU_list <-  LU_list[[paste("LU_", LU_crop, "_rainfed", sep = "")]]
+    prod_rain <- yld_long_rain[, 3:ncol(yld_long_rain)] * rainfed_LU_list$`2015`
+    nc_close(yld)
+
+    # Aggregate production by country
+    cntr_prod_irr <- matrix(0, length(tgrid_ctr), ncol(prod_irr))
+    cntr_prod_rain <- matrix(0, length(tgrid_ctr), ncol(prod_rain))
+    area_irr <- matrix(0, length(tgrid_ctr), 1)
+    area_rain <- matrix(0, length(tgrid_ctr), 1)
+
+    for (l in 1:ncol(prod_irr)) {  # For each year
+      for (k in 1:length(tgrid_ctr)) {  # For each country ID
+        cntr_prod_irr[k, l] <- sum(prod_irr[tgrid$ctr == tgrid_ctr[k], l], na.rm = TRUE)
+        cntr_prod_rain[k, l] <- sum(prod_rain[tgrid$ctr == tgrid_ctr[k], l], na.rm = TRUE)
+        area_irr[k, ] <- sum(irrigated_LU_list[tgrid$ctr == tgrid_ctr[k], ], na.rm = TRUE)
+        area_rain[k, ] <- sum(rainfed_LU_list[tgrid$ctr == tgrid_ctr[k], ], na.rm = TRUE)
+      } # close year loop
+    } # close country loop
+
+    # Sum up production for irrigated and rainfed
+    cntr_prod <- as.data.frame(cntr_prod_irr + cntr_prod_rain)
+    area <- as.data.frame(area_rain + area_irr)
+    
+    # Calculate yield
+    yield <- data.frame(matrix(NA, nrow = nrow(cntr_prod), ncol = ncol(cntr_prod)))
+    for (i in 1:ncol(cntr_prod)) {
+      yield[, i] <- cntr_prod[, i] / area[, 1]
+    }
+    
+    end_year <- 1900 + ncol(yield)
+    years <- 1901:end_year
+    colnames(yield) <- c(as.character(years))
+    yield$country <- tgrid_ctr
+
+    # Construct the full path to the output file
+    save_path <- file.path(
+          repo_path,
+          "GGCMI-validation", "data", "processed", "GGCMI_dataframes"
+          crop,
+          paste0(model, "_", crop, ".RData")
+           )
+    
+    # Save the results
+    save(
+         cntr_prod_irr, cntr_prod_rain, area_irr, area_rain, area, cntr_prod, yield,
+         yld_long_irr, yld_long_rain,
+         file = save_path
+         )
+    
+  } # close model loop
+} # close crop loop
+
+```
