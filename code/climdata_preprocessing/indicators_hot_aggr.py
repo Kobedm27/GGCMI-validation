@@ -24,12 +24,15 @@ import pandas as pd
 from datetime import datetime, timedelta 
 import pyreadr 
 
+# User-defined base path to the repository
+repo_path = Path("") #change accordingly!
+
 ## 1. Get the temperature data and join them
 
-temp1 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/climate/atmosphere/obsclim/global/daily/historical/GSWP3-W5E5/gswp3-w5e5_obsclim_tasmax_global_daily_1981_1990.nc", engine='netcdf4')
-temp2 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/climate/atmosphere/obsclim/global/daily/historical/GSWP3-W5E5/gswp3-w5e5_obsclim_tasmax_global_daily_1991_2000.nc", engine='netcdf4')
-temp3 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/climate/atmosphere/obsclim/global/daily/historical/GSWP3-W5E5/gswp3-w5e5_obsclim_tasmax_global_daily_2001_2010.nc", engine='netcdf4')
-temp4 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/climate/atmosphere/obsclim/global/daily/historical/GSWP3-W5E5/gswp3-w5e5_obsclim_tasmax_global_daily_2011_2019.nc", engine='netcdf4')
+temp1 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/climdata/gswp3-w5e5_obsclim_tasmax_global_daily_1981_1990.nc", engine='netcdf4')
+temp2 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/climdata/gswp3-w5e5_obsclim_tasmax_global_daily_1991_2000.nc", engine='netcdf4')
+temp3 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/climdata/gswp3-w5e5_obsclim_tasmax_global_daily_2001_2010.nc", engine='netcdf4')
+temp4 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/climdata/gswp3-w5e5_obsclim_tasmax_global_daily_2011_2019.nc", engine='netcdf4')
 
 temp_days = xr.concat([temp1, temp2, temp3, temp4], dim='time')
 
@@ -38,12 +41,12 @@ temp_days = xr.concat([temp1, temp2, temp3, temp4], dim='time')
 ## 2.1 crop data
 
 # load crop data (earlier processed in R as RData)
-cropdat_swh = pyreadr.read_r("/p/projects/preview/Cluster_Testing/model_ready_data_othercrops.RData")["swh_dat"] 
-cropdat_wwh = pyreadr.read_r("/p/projects/preview/Cluster_Testing/model_ready_data_othercrops.RData")["wwh_dat"] 
-cropdat_ri1 = pyreadr.read_r("/p/projects/preview/Cluster_Testing/model_ready_data_othercrops.RData")["ri1_dat"] 
-cropdat_ri2 = pyreadr.read_r("/p/projects/preview/Cluster_Testing/model_ready_data_othercrops.RData")["ri2_dat"] 
-cropdat_soy = pyreadr.read_r("/p/projects/preview/Cluster_Testing/model_ready_data_othercrops.RData")["soy_dat"] 
-cropdat_mai = pyreadr.read_r("/p/projects/preview/Cluster_Testing/model_ready_data_mai.RData")["mai_dat"] 
+cropdat_swh = pyreadr.read_r(repo_path / "GGCMI-validation/data/processed/crop_specific_data.RData")["dat_swh"] 
+cropdat_wwh = pyreadr.read_r(repo_path / "GGCMI-validation/data/processed/crop_specific_data.RData")["dat_wwh"]
+cropdat_ri1 = pyreadr.read_r(repo_path / "GGCMI-validation/data/processed/crop_specific_data.RData")["dat_soy"]
+cropdat_ri2 = pyreadr.read_r(repo_path / "GGCMI-validation/data/processed/crop_specific_data.RData")["dat_ri1"]
+cropdat_soy = pyreadr.read_r(repo_path / "GGCMI-validation/data/processed/crop_specific_data.RData")["dat_ri2"]
+cropdat_mai = pyreadr.read_r(repo_path / "GGCMI-validation/data/processed/crop_specific_data.RData")["dat_mai"] 
 
 # Add a column to each DataFrame indicating the crop name
 cropdat_swh['crop'] = 'swh'
@@ -81,18 +84,18 @@ crop_names = ['mai', 'ri1', 'ri2', 'soy', 'swh', 'wwh']
 ## 2.2 Growing season data
 
 # Load growing seasons
-season_firr_swh = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_swh_firr.nc") 
-season_noirr_swh = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_swh_noirr.nc") 
-season_firr_wwh = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_wwh_firr.nc") 
-season_noirr_wwh = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_wwh_noirr.nc") 
-season_firr_soy = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_soy_firr.nc") 
-season_noirr_soy = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_soy_noirr.nc")
-season_firr_mai = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_mai_firr.nc") 
-season_noirr_mai = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_mai_noirr.nc") 
-season_firr_ri1 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_ri1_firr.nc") 
-season_noirr_ri1 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_ri1_noirr.nc") 
-season_firr_ri2 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_ri2_firr.nc") 
-season_noirr_ri2 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_ri2_noirr.nc") 
+season_firr_swh = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_swh_firr.nc") 
+season_noirr_swh = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_swh_noirr.nc")
+season_firr_wwh = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_wwh_firr.nc") 
+season_noirr_wwh = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_wwh_noirr.nc") 
+season_firr_soy = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_soy_firr.nc") 
+season_noirr_soy = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_soy_noirr.nc") 
+season_firr_mai = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_mai_firr.nc") 
+season_noirr_mai = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_mai_noirr.nc")
+season_firr_ri1 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_ri1_firr.nc") 
+season_noirr_ri1 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_ri1_noirr.nc") 
+season_firr_ri2 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_ri2_firr.nc") 
+season_noirr_ri2 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_ri2_noirr.nc")  
 
 season_firr_list = [season_firr_mai, season_firr_ri1, season_firr_ri2, season_firr_soy, season_firr_swh, season_firr_wwh]
 season_noirr_list = [season_noirr_mai, season_noirr_ri1, season_noirr_ri2, season_noirr_soy, season_noirr_swh, season_noirr_wwh]
@@ -307,5 +310,5 @@ def season_stat(climate, season_firr_dict, season_noirr_dict, cropdat):
 FHD, LHS = season_stat(temp_days, season_firr_dict, season_noirr_dict, cropdat_unique)
 
 ## 6. Save new datasets as netcdf files
-FHD.to_netcdf("GGCMI-validation/data/processed/extremes_indicators/crop_aggregated/FHD_aggr.nc")  # adapt the path according to where the repo is stored
-LHS.to_netcdf("GGCMI-validation/data/processed/extremes_indicators/crop_aggregated/LHS_aggr.nc")  
+FHD.to_netcdf(repo_path / "GGCMI-validation/data/processed/extremes_indicators/crop_aggregated/FHD_aggr.nc")
+LHS.to_netcdf(repo_path / "GGCMI-validation/data/processed/extremes_indicators/crop_aggregated/LHS_aggr.nc")  
