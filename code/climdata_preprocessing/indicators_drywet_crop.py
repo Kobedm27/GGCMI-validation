@@ -25,24 +25,27 @@ import pandas as pd
 from datetime import datetime, timedelta 
 import pyreadr 
 
+# User-defined base path to the repository
+repo_path = Path("") #change accordingly!
+
 ## 1. Get the precipitation data and join them
 
-pr1 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/climate/atmosphere/obsclim/global/daily/historical/GSWP3-W5E5/gswp3-w5e5_obsclim_pr_global_daily_1981_1990.nc", engine='netcdf4')
-pr2 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/climate/atmosphere/obsclim/global/daily/historical/GSWP3-W5E5/gswp3-w5e5_obsclim_pr_global_daily_1991_2000.nc", engine='netcdf4')
-pr3 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/climate/atmosphere/obsclim/global/daily/historical/GSWP3-W5E5/gswp3-w5e5_obsclim_pr_global_daily_2001_2010.nc", engine='netcdf4')
-pr4 = xr.open_dataset("/p/projects/isimip/isimip/ISIMIP3a/InputData/climate/atmosphere/obsclim/global/daily/historical/GSWP3-W5E5/gswp3-w5e5_obsclim_pr_global_daily_2011_2019.nc", engine='netcdf4')
+pr1 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/climdata/gswp3-w5e5_obsclim_pr_global_daily_1981_1990.nc", engine='netcdf4')
+pr2 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/climdata/gswp3-w5e5_obsclim_pr_global_daily_1991_2000.nc", engine='netcdf4')
+pr3 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/climdata/gswp3-w5e5_obsclim_pr_global_daily_2001_2010.nc", engine='netcdf4')
+pr4 = xr.open_dataset(repo_path / "GGCMI-validation/data/raw/climdata/gswp3-w5e5_obsclim_pr_global_daily_2011_2019.nc", engine='netcdf4')
 
 precip_days = xr.concat([pr1, pr2, pr3, pr4], dim='time')
 
 ## 2. Bring in crop data and growing season data 
 
 # Load crop data (earlier processed in R as RData)
-cropdat = pyreadr.read_r("/p/projects/preview/Cluster_Testing/model_ready_data_othercrops.RData")[f"{crop}_dat"] 
+cropdat = pyreadr.read_r(repo_path / "GGCMI-validation/data/processed/crop_specific_data.RData")[f"dat_{crop}"]
 cropdat_unique = cropdat.drop_duplicates(subset = ["lon", "lat"])
 
 # Load growing seasons
-season_firr = xr.open_dataset(f"/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_{crop}_firr.nc")
-season_noirr = xr.open_dataset(f"/p/projects/isimip/isimip/ISIMIP3a/InputData/socioeconomic/crop_calendar/2015soc/ggcmi-crop-calendar-phase3_2015soc_{crop}_noirr.nc")
+season_firr = xr.open_dataset(repo_path / f"GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_{crop}_firr.nc")
+season_noirr = xr.open_dataset(repo_path / f"GGCMI-validation/data/raw/other/ggcmi-crop-calendar-phase3_2015soc_{crop}_noirr.nc")
 
 ## 3. Define function to calculate longest consecutive wet/dry period 
 def extreme_length(array):
@@ -279,9 +282,8 @@ def season_stat(climate, season_firr_dict, season_noirr_dict, cropdat):
 FDD, FWD, TPR, LDS, LWS = season_stat(precip_days, season_firr_dict, season_noirr_dict, cropdat_unique)
 
 ## 6. Save new datasets as netcdf files
-# adapt the path according to where the repo is stored
-FDD.to_netcdf(f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/FDD_{crop}.nc")  
-FWD.to_netcdf(f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/FWD_{crop}.nc") 
-LDS.to_netcdf(f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/LDS_{crop}.nc") 
-LWS.to_netcdf(f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/LWS_{crop}.nc")  
-TPR.to_netcdf(f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/TPR_{crop}.nc") 
+FDD.to_netcdf(repo_path / f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/FDD_{crop}.nc")  
+FWD.to_netcdf(repo_path / f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/FWD_{crop}.nc") 
+LDS.to_netcdf(repo_path / f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/LDS_{crop}.nc") 
+LWS.to_netcdf(repo_path / f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/LWS_{crop}.nc")  
+TPR.to_netcdf(repo_path / f"GGCMI-validation/data/processed/extremes_indicators/crop_specific/TPR_{crop}.nc") 
