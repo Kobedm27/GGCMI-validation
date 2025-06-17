@@ -1,10 +1,15 @@
+# Script to adjust the time in the GGCMI yield data from growing seasons to calendar years
+# Note that the script handles ALL GGCMI simulation runs/data. For this analysis only yield data from ISIMIP3a, 2015soc, default 
+# are used. 
+# We downloaded the script from its original Github repository: https://github.com/AgMIP-GGCMI/phase3_processing_pipeline/blob/main/time_adjustment.R
+
 # load libraries
 library(ncdf4)
 library(testthat)
 
 # settings
 
-base_path <- "/p/projects/macmit/data/GGCMI/AgMIP.output"
+# base_path <- "/GGCMI-validation/data/raw/GGCMI_yields/" # Change to where the repository was stored
 modelnames <- c(
   "ACEA", "CROVER", "CYGMA1p74", "Daycent", "EPIC-IIASA", "DSSAT-Pythia", 
   "ISAM", "LDNDC", "LPJ-GUESS", "LPJmL", "PEPIC", "pDSSAT", 
@@ -21,7 +26,7 @@ vars <- c("yield", "biom", "cnyield", "plantday", "plantyear", "harvyear", "anth
       "transp", "evap", "soilevap", "runoff", "rootm", "tnrup", "tnrin", "tnrloss",
       "n2oemis", "n2emis", "nleach", "tcemis", "ch4emis", "maturitystatus",
       "maturityindex")[1]
-calenadar_path <- "/p/projects/macmit/data/GGCMI/AgMIP.input/phase3/crop_calendar"
+calenadar_path <- "/GGCMI-validation/data/raw/other/"  # change to where the repo is stored locally
 phases <- c("phase3a", "phase3b")
 
 soc_scenario1 <- soc_scenario <- socs[2]
@@ -167,11 +172,7 @@ main <- function(modelname, climate_forcing, bias_adjustment, climate_scenario,
   # create new file name for the adjusted netcdf file
   file_name_adj <- gsub(".nc", "_calendar-year-adjusted.nc", file_name)
   # create new directory for the adjusted netcdf file if it does not exist
-  dir_adj <- paste(base_path, "processed-phase3", "calendar-year-adjusted",
-    modelname, phase, tolower(climate_forcing),
-    if(phase == phases[1]) {paste0(climate_forcing, "-", bias_adjustment) } else {bias_adjustment}, 
-    climate_scenario, crop, sep = "/")
-  dir.create(dir_adj, recursive = TRUE, showWarnings = FALSE)
+  dir_adj <- paste("GGCMI-validation/data/processed/GGCMI_calendar_adjusted", crop, sep = "/") #Adjust for where repo is stored
    # get units, long_name and missval from the original netcdf file
   var_atts <- ncatt_get(nc, varid = paste(variable, crop, irrigation, sep = "-"))
   # get lon dimension attributes
