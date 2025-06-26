@@ -1,0 +1,225 @@
+---
+title: "Filtering the crop data for climatic extremes"
+format: 
+  html: 
+    toc: true
+    code-fold: true
+    code-summary: "Show the code"
+    embed-resources: true
+    self-contained-math: true
+editor: visual
+---
+
+::: {.callout-note title="Overview" icon="false"}
+This notebook will guide you through the code to integrate the preprocessed climatic extremes indicator data and preprocessed yield data in R. The following analysis steps will be handled per crop type (also for crop-aggregated data):
+
+1.  Computation of model ensemble median yield values
+2.  Calculation and definition of extremes thresholds
+3.  Filtering the data for these extremes
+4.  Storing the data, ready for figures, per crop type
+
+The following data files are needed:
+
+-   crop_specific_data.RData: preprocessed data per individual crop type
+
+-   aggr_bench.RData: preprocessed crop-aggregated data for benchmark yields
+
+-   aggr_sim.RData: preprocessed crop-aggregated data for simulated yields
+
+-   Preprocessed climatic extremes indicator data per crop type (also for aggregated)
+:::
+
+Necessary libraries:
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)   # Includes dplyr, ggplot2, readr, etc.
+library(ncdf4)       # For working with NetCDF files
+```
+
+Organize crop names and file paths and load the preprocessed crop data
+
+```{r}
+crops <- c("mai", "wwh", "ri1", "soy","aggr")
+
+nc_vars <- c("FHD", "LHS", "FDD", "LDS", 
+             "FWD", "LWS", "TPR")
+
+base_path <- "" # Where is the code repo stored?
+
+# Load datasets
+load(file.path(base_path, "GGCMI-validation/data/processed/integrated_cropdata/crop_specific_data.RData"))
+
+load(file.path(base_path, "GGCMI-validation/data/processed/integrated_cropdata/aggr_sim.RData"))
+detr_sim <- aggr_sim %>% 
+  mutate(year = as.numeric(year)) %>% 
+  ungroup()
+
+load(file.path(base_path, "GGCMI-validation/data/processed/integrated_cropdata/aggr_bench.RData"))
+detr_obs <- aggr_bench %>% 
+  mutate(year = as.numeric(year),
+        yield = aggregated_yield_obs) %>% 
+  ungroup() 
+
+```
+
+Create a function that processes crop-by-crop. The following steps are done:
+
+1.  Computing the model ensemble median and binding it with the dataframe of individual models
+2.  Loading the crop-specific climate extremes indicators and joining it with the dataframe
+3.  Prefiltering grid cells for relevant yield and crop area values
+4.  Calculation of extreme thresholds to define climate extreme events based on the indicators
+5.  Creating binary indicators to indicate the extreme events and filter for only recognised extremes
+
+```{r}
+process_crop <- function(crop) {
+    
+  # Dynamically get the crop data frame
+    if (crop == "aggr") {
+
+        # we keep detr_obs and detr_sim separate
+
+        dat <- detr_obs 
+
+          # Median ensemble
+  ens_dat_aggr <- detr_sim %>% 
+    group_by(lat, lon, year) %>% 
+    summarise(divtrend_sim = median(divtrend_sim),
+              difftrend_sim = median(difftrend_sim),
+              model = "ensemble",
+              ctr = unique(ctr)) %>% 
+    ungroup()
+
+      # Bind dataframes
+  detr_sim <- rbind(ens_dat_aggr, detr_sim %>% dplyr::select(lat, lon, year, ctr, divtrend_sim, difftrend_sim, model))
+        
+    } else {
+  dat <- get(paste0("dat_", crop)) %>% 
+    mutate(year = as.numeric(year),
+           total_area = rain_area + irr_area) %>% 
+    rename(difftrend_obs = "difftrend_Obs") %>% 
+    ungroup()
+
+          # Median ensemble
+
+          ens_dat <- dat %>% 
+    group_by(lat, lon, year) %>% 
+    summarise(divtrend_sim = median(divtrend_sim),
+              difftrend_sim = median(difftrend_sim),
+              divtrend_obs = divtrend_obs,
+              difftrend_obs = difftrend_obs,
+              yield = yield,
+              total_area = total_area,
+              model = "ensemble",
+              ctr = unique(ctr)) %>% 
+    ungroup()
+
+    # Bind dataframes
+  dat <- rbind(ens_dat, dat %>% dplyr::select(lat, lon, year, ctr, divtrend_sim, difftrend_sim, difftrend_obs, divtrend_obs, model, yield, total_area))
+
+        }
+  
+  # Load netCDFs
+  nc_list <- lapply(nc_vars, function(v) {
+    nc_open(file.path(base_path, paste0("GGCMI-validation/data/processed/extremes_indicators/", v, "_", crop, ".nc")))
+  })
+  
+  # Extract dimensions
+  lon <- ncvar_get(nc_list[[1]], "lon")
+  lat <- ncvar_get(nc_list[[1]], "lat")
+  year <- ncvar_get(nc_list[[1]], "year")
+  coords <- expand.grid(lon = lon, lat = lat, year = year)
+  
+  # Flatten and combine variables
+  var_data <- lapply(nc_list, function(nc) as.vector(ncvar_get(nc, "__xarray_dataarray_variable__")))
+  names(var_data) <- nc_vars
+  for (nc in nc_list) nc_close(nc)
+
+  extreme_df <- cbind(coords, as.data.frame(var_data)) %>% as_tibble()
+  names(extreme_df) <- c("lon", "lat", "year", "hotdays", "heatwaves", "drydays","droughts", "wetdays", "floods", "totprec")
+
+  # Join with crop data
+  extremes <- inner_join(dat, extreme_df, by = c("lon", "lat", "year"))
+
+  # Prefilter gridcells
+  gridcells_filtered <- extremes %>% 
+    filter(total_area >= 200) %>% 
+    group_by(lat, lon) %>% 
+    summarise(mean_yield = mean(yield), .groups = "drop") %>% 
+    filter(mean_yield >= 0.1)
+
+  extremes_pref <- extremes %>% semi_join(gridcells_filtered, by = c("lat", "lon"))
+ 
+  dat <- dat %>% semi_join(gridcells_filtered, by = c("lat", "lon"))
+
+  # Thresholds
+  thresholds <- extremes_pref %>%
+    group_by(lon, lat) %>%
+    summarise(
+      threshold_hotdays = quantile(hotdays, 0.95),
+      threshold_wetdays = quantile(wetdays, 0.95),
+      threshold_drydays = quantile(drydays, 0.95),
+      threshold_heatwaves = quantile(heatwaves, 0.95),
+      threshold_droughts = quantile(droughts, 0.95),
+      threshold_floods = quantile(floods, 0.95),
+      threshold_totprec = quantile(totprec, 0.05),
+      threshold_totprec2 = quantile(totprec, 0.95),
+      threshold_cropfailure = -10,
+      threshold_cropfailure2 = quantile(difftrend_obs, 0.05),
+      .groups = "drop"
+    )
+  
+  # Binary indicators
+  extremes_dat <- extremes_pref %>%
+    left_join(thresholds, by = c("lon", "lat")) %>%
+    mutate(divtrend_obs_perc = (divtrend_obs - 1) * 100,
+           heatwave = ifelse(hotdays > threshold_hotdays | heatwaves > threshold_heatwaves, 1, 0),
+           drought = ifelse(drydays > threshold_drydays | droughts > threshold_droughts | totprec < threshold_totprec, 1, 0),
+           waterlogging = ifelse(wetdays > threshold_wetdays | floods > threshold_floods | totprec > threshold_totprec2, 1, 0),
+           cropfailure = ifelse(divtrend_obs_perc <= threshold_cropfailure & difftrend_obs < 0, 1, 0)) 
+
+  # Filtering by crop failure and extreme event
+  extremes_filtered <- extremes_dat %>% 
+    filter(cropfailure == 1, drought == 1 | heatwave == 1 | waterlogging == 1) %>% 
+    mutate(climate_extreme = case_when(
+      heatwave == 1 & drought == 1 & waterlogging == 1 ~ "Total",
+      heatwave == 1 & drought == 1 ~ "Hot & Dry",
+      heatwave == 1 & waterlogging == 1 ~ "Hot & Wet",
+      drought == 1 & waterlogging == 1 ~ "Dry & Wet",
+      heatwave == 1 ~ "Hot",
+      drought == 1 ~ "Dry",
+      waterlogging == 1 ~ "Wet"
+    )) %>%
+    filter(climate_extreme %in% c("Wet", "Dry", "Hot", "Hot & Dry")) %>% 
+    distinct()
+
+  if (crop == "aggr") {
+
+      # Merge all data
+      extremes_filtered <- detr_sim %>% 
+  inner_join(extremes_filtered %>%  dplyr::select(difftrend_obs, divtrend_obs_perc, divtrend_obs, aggregated_yield_obs, climate_extreme, lat, lon, year, model) %>%  distinct(), by = c("lat", "lon", "year", "model"))
+      
+  }
+
+  extremes_filtered$crop <- crop
+
+  return(extremes_filtered)
+}
+```
+
+Loop over all crops, execute the function and store each crop type as RDS file.
+
+```{r, warning = FALSE, message=FALSE}
+# Loop through crops, process, and save as .RDS
+for (crop in crops) {
+  cat("Processing:", crop, "\n")
+  
+  data_extr <- process_crop(crop)
+  
+  # Define output paths
+  rds_path <- file.path(base_path, paste0("GGCMI-validation/data/processed/extremes_", crop, ".RDS"))
+  
+  # Save as RDS
+  saveRDS(data_extr, rds_path)
+}
+
+```
