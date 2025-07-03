@@ -16,6 +16,15 @@ Author(s) (2025). Global Gridded Crop Models underestimate yield losses from cli
 - `results/`: Final figures and tables
 - `paper/`: Manuscript and supplementary materials
 
+## Crop abbreviations
+
+- **mai** = maize
+- **soy** = soybean
+- **wwh** = winter wheat
+- **swh** = spring wheat
+- **ri1** = rice in the first growing season
+- **ri2** = rice in the second growing season
+
 ## Getting Started
 
 To reproduce the analysis:
