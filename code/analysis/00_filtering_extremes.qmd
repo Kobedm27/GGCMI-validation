@@ -65,7 +65,9 @@ load(file.path(base_path, "GGCMI-validation/data/processed/integrated_cropdata/a
 detr_obs <- aggr_bench %>% 
   mutate(year = as.numeric(year),
         yield = aggregated_yield_obs) %>% 
-  ungroup() 
+  ungroup() %>%
+dplyr::select(lon, lat, yield, year, total_area, divtrend_obs, difftrend_obs) %>%
+distinct(lon, lat, year, .keep_all = TRUE)
 
 ```
 
@@ -208,7 +210,7 @@ process_crop <- function(crop) {
 
       # Merge all data
       extremes_filtered <- detr_sim %>% 
-  inner_join(extremes_filtered %>%  dplyr::select(difftrend_obs, divtrend_obs_perc, divtrend_obs, aggregated_yield_obs, climate_extreme, lat, lon, year, model) %>%  distinct(), by = c("lat", "lon", "year", "model"))
+  inner_join(extremes_filtered, by = c("lat", "lon", "year"))
       
   }
 
