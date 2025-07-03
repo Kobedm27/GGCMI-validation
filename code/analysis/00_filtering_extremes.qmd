@@ -31,7 +31,7 @@ The following data files are needed:
 
 Output:
 
-per crop (also for crop-aggregated data) a RDS file ('extremes\_\<crop\>.RD') which will be used for the figures and further statistical analysis.
+per crop (also for crop-aggregated data) a RDS file will be stored which will be used for the figures and further statistical analysis. We additionally also keep the data before filtering for extremes to analyze the general performance as well as a RDS file. The files are stored at data/processed/figure_ready_data. 
 :::
 
 ## Filtering
@@ -216,7 +216,11 @@ process_crop <- function(crop) {
 
   extremes_filtered$crop <- crop
 
-  return(extremes_filtered)
+   if (crop == "aggr"){
+      return(list(extremes_filtered, dat, detr_sim)) #save also the data before filtering for extremes
+  } else{
+      return(list(extremes_filtered, dat))
+  }
 }
 ```
 
@@ -236,7 +240,16 @@ extremes <- c("Dry", "Hot", "Wet", "Hot & Dry")
 for (crop in crops) {
   cat("Processing:", crop, "\n")
   
-  data_extr <- process_crop(crop)
+  if (crop == "aggr"){
+        dfs <- process_crop(crop)
+        data_extr <- dfs[[1]]
+        dat <- dfs[[2]]
+        detr_sim <- dfs[[3]]
+    } else {
+        dfs <- process_crop(crop)
+        data_extr <- dfs[[1]]
+        dat <- dfs[[2]]
+    }
 
   for (extreme in extremes){
   count <- data_extr %>%
@@ -251,10 +264,16 @@ for (crop in crops) {
       }
   
   # Define output paths
-  rds_path <- file.path(paste0(base_path, "GGCMI-validation/data/processed/extremes_", crop, ".RDS"))
+  extr_path <- file.path(base_path, paste0("GGCMI-validation/data/processed/figure_ready_data/extremes_", crop, ".RDS"))
+  dat_path <- file.path(base_path, paste0("GGCMI-validation/data/processed/figure_ready_data/general__", crop, ".RDS"))
+  detr_sim_path <- file.path(base_path, paste0("GGCMI-validation/data/processed/figure_ready_data/general_sim_", crop, ".RDS"))
   
   # Save as RDS
-  saveRDS(data_extr, rds_path)
+  saveRDS(data_extr, extr_path)
+  saveRDS(dat, dat_path)
+
+  if (crop == "aggr"){
+      saveRDS(detr_sim, detr_sim_path)
 }
 
 ```
