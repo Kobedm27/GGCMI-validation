@@ -2,7 +2,7 @@
 
 This folder contains all **Quarto notebooks (`.qmd`)** used in the analysis for the paper:
 
-**"Global Gridded Crop Models Underestimate Yield Losses from Climatic Extremes"**
+**"Global Gridded Crop Models underestimate yield losses from climatic extremes"**
 
 All notebooks are written in **R** using [Quarto](https://quarto.org).
 
