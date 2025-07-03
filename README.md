@@ -24,6 +24,7 @@ Author(s) (2025). Global Gridded Crop Models underestimate yield losses from cli
 - **swh** = spring wheat
 - **ri1** = rice in the first growing season
 - **ri2** = rice in the second growing season
+- **aggr** = aggregated across all crops above
 
 ## Getting Started
 
