@@ -7,7 +7,7 @@ This repository contains the code, data, and figures supporting the paper:
 
 Please cite this work as:
 
-Author(s) (2025). Global Gridded Crop Models Underestimate Yield Losses from Climatic Extremes. Nature Climate Change (submitted). DOI: TBD
+Author(s) (2025). Global Gridded Crop Models underestimate yield losses from climatic extremes. Nature Climate Change (submitted). DOI: TBD
 
 ## Contents
 
