@@ -1,4 +1,4 @@
-# Global Gridded Crop Models Underestimate Yield Losses from Climatic Extremes
+# Global Gridded Crop Models underestimate yield losses from climatic extremes
 
 This repository contains the code, data, and figures supporting the paper:
 
