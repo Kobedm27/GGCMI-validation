@@ -20,6 +20,6 @@ Each notebook will:
 - Save outputs to `results/`
 
 Note that: 
-- The HTML files provided in the `code/analysis/` folder can be downloaded and viewed to quickly see for each figure the corresponding code and the rendered plot without having to run the notebook.
+- The `.html` files provided in the `code/analysis/` folder can be downloaded and viewed to quickly see for each figure the corresponding code and the rendered plot without having to run the notebook.
 - Rerun the corresponding `.qmd` notebook if updates are needed.
 
