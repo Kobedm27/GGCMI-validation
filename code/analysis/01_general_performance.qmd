@@ -1,0 +1,587 @@
+---
+title: "General crop model performance figures"
+format: 
+  html: 
+    toc: true
+    code-fold: true
+    code-summary: "Show the code"
+    embed-resources: true
+    self-contained-math: true
+
+editor: visual
+---
+
+::: {.callout-note title="Overview" icon="false"}
+This notebook will guide you through the code to plot the results of the general model performance (i.e. not under specific extremes) in R. The following figures will be computed:
+
+-   Figure 1: global assessment of crop model performance (1981-2016) for aggregated crops
+
+-   Supplementary figure 1: global performance table without harvest area weighting
+
+-   Supplementary figures 2-5: global performance maps for each crop (mai, soy, wwh, ri1)
+
+The fully processed and filtered data files, available under GGCMI-validation/data/processed/figure_ready_data are required to produce the figures.
+:::
+
+We load the necessary libraries
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)   # Includes dplyr, ggplot2, readr, etc.
+library(sjPlot)  # to set and configure plotting theme
+library(rnaturalearth) # to create base world map with countries
+library(viridis) # colorblind color schemes
+```
+
+We configure the plotting theme based on the data visualization blog from Cédric Scherer: <https://www.cedricscherer.com/>
+
+```{r, warning = FALSE, message = FALSE}
+theme_Scherer <- function (base_size = 12, base_family = "Helvetica") {
+  half_line <- base_size/2
+  theme(
+    line = element_line(color = "black", linewidth = .5,
+                        linetype = 1, lineend = "butt"),
+    rect = element_rect(fill = "white", color = "black",
+                        linewidth = .5, linetype = 1),
+    text = element_text(family = base_family, face = "plain",
+                        color = "black", size = base_size,
+                        lineheight = .9, hjust = .5, vjust = .5,
+                        angle = 0, margin = margin(), debug = FALSE),
+    axis.line = element_blank(),
+    axis.line.x = NULL,
+    axis.line.y = NULL,
+    axis.text = element_text(size = base_size * 1.1, color = "gray30"),
+    axis.text.x = element_text(margin = margin(t = .8 * half_line/2),
+                               vjust = 1),
+    axis.text.x.top = element_text(margin = margin(b = .8 * half_line/2),
+                                   vjust = 0),
+    axis.text.y = element_text(margin = margin(r = .8 * half_line/2),
+                               hjust = 1),
+    axis.text.y.right = element_text(margin = margin(l = .8 * half_line/2),
+                                     hjust = 0),
+    axis.ticks = element_line(color = "gray30", linewidth = .7),
+    axis.ticks.length = unit(half_line / 1.5, "pt"),
+    axis.ticks.length.x = NULL,
+    axis.ticks.length.x.top = NULL,
+    axis.ticks.length.x.bottom = NULL,
+    axis.ticks.length.y = NULL,
+    axis.ticks.length.y.left = NULL,
+    axis.ticks.length.y.right = NULL,
+    axis.title.x = element_text(margin = margin(t = half_line),
+                                vjust = 1, size = base_size * 1.3,
+                                face = "bold"),
+    axis.title.x.top = element_text(margin = margin(b = half_line),
+                                    vjust = 0),
+    axis.title.y = element_text(angle = 90, vjust = 1,
+                                margin = margin(r = half_line),
+                                size = base_size * 1.3, face = "bold"),
+    axis.title.y.right = element_text(angle = -90, vjust = 0,
+                                      margin = margin(l = half_line)),
+    legend.background = element_rect(color = NA),
+    legend.spacing = unit(.4, "cm"),
+    legend.spacing.x = NULL,
+    legend.spacing.y = NULL,
+    legend.margin = margin(.2, .2, .2, .2, "cm"),
+    legend.key = element_rect(fill = "gray95", color = "white"),
+    legend.key.size = unit(1.2, "lines"),
+    legend.key.height = NULL,
+    legend.key.width = NULL,
+    legend.text = element_text(size = rel(.8)),
+    legend.text.align = NULL,
+    legend.title = element_text(hjust = 0),
+    legend.title.align = NULL,
+    legend.position = "right",
+    legend.direction = NULL,
+    legend.justification = "center",
+    legend.box = NULL,
+    legend.box.margin = margin(0, 0, 0, 0, "cm"),
+    legend.box.background = element_blank(),
+    legend.box.spacing = unit(.4, "cm"),
+    panel.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "gray30",
+                                fill = NA, linewidth = .7),
+    panel.grid.major = element_line(color = "gray90", linewidth = 1),
+    panel.grid.minor = element_line(color = "gray90", linewidth = .5,
+                                    linetype = "dashed"),
+    panel.spacing = unit(base_size, "pt"),
+    panel.spacing.x = NULL,
+    panel.spacing.y = NULL,
+    panel.ontop = FALSE,
+    strip.background = element_rect(fill = "white", color = "gray30"),
+    strip.text = element_text(color = "black", size = base_size),
+    strip.text.x = element_text(margin = margin(t = half_line,
+                                                b = half_line)),
+    strip.text.y = element_text(angle = -90,
+                                margin = margin(l = half_line,
+                                                r = half_line)),
+    strip.text.y.left = element_text(angle = 90),
+    strip.placement = "inside",
+    strip.placement.x = NULL,
+    strip.placement.y = NULL,
+    strip.switch.pad.grid = unit(0.1, "cm"),
+    strip.switch.pad.wrap = unit(0.1, "cm"),
+    plot.background = element_rect(color = NA),
+    plot.title = element_text(size = base_size * 1.8, hjust = .5,
+                              vjust = 1, face = "bold",
+                              margin = margin(b = half_line * 1.2)),
+    plot.title.position = "panel",
+    plot.subtitle = element_text(size = base_size * 1.3,
+                                 hjust = .5, vjust = 1,
+                                 margin = margin(b = half_line * .9)),
+    plot.caption = element_text(size = rel(0.9), hjust = 1, vjust = 1,
+                                margin = margin(t = half_line * .9)),
+    plot.caption.position = "panel",
+    plot.tag = element_text(size = rel(1.2), hjust = .5, vjust = .5),
+    plot.tag.position = "topleft",
+    plot.margin = margin(rep(base_size, 4)),
+    complete = TRUE
+  )
+}
+set_theme(theme_Scherer())
+```
+
+Then we can load our data:
+
+```{r, warning = FALSE, message = FALSE}
+base_path <- "" # Where is the code repo stored?
+
+# List of crops
+crops <- c("mai", "wwh", "ri1", "soy", "aggr")
+
+# Read each .rds file into a named list
+crop_data <- lapply(crops, function(crop) {
+  readRDS(file.path(base_path, paste0("GGCMI-validation/data/processed/figure_ready_data/general_", crop, ".rds")))
+})
+
+general_sim_aggr <- readRDS(file.path(base_path, "GGCMI-validation/data/processed/figure_ready_data/general_sim_aggr.rds"))
+names(crop_data) <- crops
+```
+
+## Figure 1
+
+This figure consists of 3 sub-figures that we manually aligned into one overall figure.
+
+### Global map
+
+First we plot the global map showing Rsquared values based on a grid cell level. The values are computed by comparing the benchmark and the model ensemble median time series for the absolute detrended yield values in each grid cell. We also check the 10 best and worst gridcells.
+
+```{r, warning = FALSE, message = FALSE}
+ens_map_aggr <- crop_data[["aggr"]] %>% 
+  inner_join(general_sim_aggr %>% filter(model == "ensemble") %>% dplyr::select(lat, lon, year, difftrend_sim, ctr) %>% distinct(), by = c("lat", "lon", "year")) %>%
+  group_by(lat, lon) %>% 
+ filter(sd(difftrend_obs) > 0, sd(difftrend_sim) > 0) %>% # only gridcells where the standard deviation is bigger than 0
+    summarise(rsquared = cor(difftrend_obs, difftrend_sim) ^2,
+             ctr = ctr) %>%
+distinct()
+```
+
+Top 10 best performing gridcells
+
+```{r, warning = FALSE, message = FALSE}
+head(ens_map_aggr[order(-ens_map_aggr$rsquared), ], 10) 
+```
+
+top 10 worst performing gridcells
+
+```{r, warning = FALSE, message = FALSE}
+head(ens_map_aggr[order(ens_map_aggr$rsquared), ], 10) 
+```
+
+To make a map we first have to create a base map with countries. We can do this using the `ne_countries` function from the `rnaturalearth` package
+
+```{r, warning = FALSE, message = FALSE}
+world_geometries <- ne_countries(scale = "medium", returnclass = "sf") %>% 
+  mutate(ctr = iso_a3_eh) %>% # eh needed to get France and Norway as well 
+  filter(name_long != "	
+Ashmore and Cartier Islands", name_long != "Indian Ocean Territories") %>%  # Get rid of duplicate AUS entries
+  dplyr::select(ctr,subregion) %>% 
+   filter(ctr != "ATA") %>%
+ distinct() 
+
+# Create the base map
+base_map <- ggplot() +
+  geom_sf(data = world_geometries, fill = "gray", color = "black", size = 0.2) +
+  theme(
+    panel.background = element_rect(fill = "white"),
+    panel.grid.major = element_blank(),  # Remove major gridlines
+    panel.grid.minor = element_blank(),  # Remove minor gridlines
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm")  # Increase overall margins
+  )
+
+base_map
+```
+
+Then we can plot the gridcell values on the base map to create the sub-figure
+
+```{r, warning = FALSE, message = FALSE}
+map_rsquared <- base_map +
+  geom_tile(data = ens_map_aggr, aes(x = lon, y = lat, color = rsquared), size = 0.2) +
+  scale_color_viridis(name = expression(R^2), option = "viridis", limits = c(0, 0.75),
+                      guide = guide_colorbar(barwidth = unit(18, "cm"),  # Increase colorbar width
+                                            barheight = unit(1, "cm"),  # Set colorbar height
+                                            title.position = "top",  # Position title above the colorbar
+                                             title.vjust = 1,  # Add space between title and colorbar
+                                              title.hjust = 0.5  # Center the title
+                      ))+
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom", legend.title = element_text(size = 17))
+
+map_rsquared
+
+# Save the figure
+ggsave(file.path(base_path, "GGCMI-validation/results/main/fig1a_GlobalPerformanceMap.png"), map_rsquared, width = 18, height = 8, dpi = 300)
+```
+
+### Latitudinal scatterplot
+
+Then we also want to create a scatterplot showing the model ensemble performance (Rsquared) along the latitudinal axis (y). We use the geom_smooth(method = "gam") to fit a smooth nonlinear trendline.
+
+```{r, warning = FALSE, message = FALSE}
+# Generate latitudinal distribution plot
+lat_plot <- ggplot(ens_map_aggr, aes(x = lat, y = rsquared)) +
+  geom_point(alpha = 0.3, color = "#3288bd") +
+  geom_smooth(method = "gam", color = "black", fill = "gray80") +
+  labs(x = "Latitude", y = expression(R^2)) + 
+  theme(axis.title.x = element_text(size = 12), axis.title.y = element_text(size = 12)) +
+  coord_flip() +
+  xlim(-45, 60) + # Limit latitude range between -45 and 60
+  ylim(0, 1)
+
+lat_plot
+
+# Save the latitudinal plot
+ggsave(file.path(base_path, "GGCMI-validation/results/main/fig1b_LatitudinalScatter.png"),
+     lat_plot, width = 10, height = 8, dpi = 300)
+```
+
+Finally, we also create a heatmap table showing the general global performance for all models across different type of performance metrics: RMSE, Rsquared, KGE. Next the to performance metrics we also show the variability (sd) and we order the models from high to low variability.
+
+We first define a function to calculate RMSE and KGE. Note that for KGE we use a self-customized version (KGE'). The original KGE can be calculated as KGE = 1-KGE'.
+
+```{r, warning = FALSE, message = FALSE}
+# Define RMSE function
+rmse <- function(observed, predicted) {
+  sqrt(mean((observed - predicted) ^ 2))
+}
+
+# Function to calculate KGE components
+calculate_kge<- function(benchmark, simulated) {
+  r <- cor(benchmark, simulated, use = "complete.obs")  # Correlation
+  Beta <- (mean(simulated, na.rm = TRUE) - mean(benchmark, na.rm = TRUE)) / sd(benchmark, na.rm = TRUE)  # Bias (Beta)
+  Alpha <- sd(simulated, na.rm = TRUE) / sd(benchmark, na.rm = TRUE)  # Variability (Alpha)
+  
+  kge <- sqrt((r - 1)^2 + (Alpha - 1)^2 + (Beta)^2)  # Calculate KGE
+  
+  return(list(KGE = kge, r = r, Beta = Beta, Alpha = Alpha))  # Return all components
+}
+```
+
+Then, we can calculate the metrics per model. To calculate the global performance, we average the metric values across all grid cells and years. We do this by taking a mean, weighted for the harvest area of the respective grid cell (HAWM). This means that grid cells where a lot of crops are produced, weight more in the calculation of the mean and thus have a higher influence than low-producing locations.
+
+```{r, warning=FALSE, message = FALSE}
+performance_metrics <- crop_data[["aggr"]] %>% 
+  inner_join(general_sim_aggr %>% dplyr::select(lat, lon, year, difftrend_sim, model), by = c("lat", "lon", "year")) %>% 
+   distinct() %>%
+  drop_na(difftrend_obs, difftrend_sim) %>% # Remove rows with NAs in either column
+  group_by(model, lat, lon) %>% 
+  filter(sd(difftrend_obs) > 0, sd(difftrend_sim) > 0) %>%
+  summarise(RMSE = rmse(difftrend_obs, difftrend_sim),
+            Rsquared = cor(difftrend_obs, difftrend_sim)^ 2,
+            KGE_components = calculate_kge(difftrend_obs, difftrend_sim),
+            sd = sd(difftrend_sim),
+           total_area = first(total_area)) %>% 
+  mutate(
+    KGE = KGE_components$KGE,
+    r = KGE_components$r,
+    Beta = KGE_components$Beta,
+    Alpha = KGE_components$Alpha
+  ) %>% dplyr::select(-KGE_components)  %>%  
+  group_by(model) %>% 
+  summarise(HAWM_RMSE = sum(RMSE*total_area)/sum(total_area),
+            HAWM_Rsquared = sum(Rsquared*total_area)/sum(total_area),
+            HAWM_KGE = sum(KGE*total_area)/sum(total_area),
+            HAWM_Alpha = sum(Alpha*total_area)/sum(total_area),
+            HAWM_beta = sum(Beta*total_area)/sum(total_area),
+            HAWM_sd = sum(total_area * sd)/sum(total_area)) %>% 
+  distinct()
+```
+
+Then we can plot these values in a heatmap table. Note that we have to normalize the values to create a common color scheme for lower to higher performance.
+
+```{r, warning = FALSE, message = FALSE}
+# Reshape and rename metric names for the table plot
+performance_metrics_long <- performance_metrics %>%
+  dplyr::select(model, HAWM_KGE, HAWM_sd, HAWM_RMSE, HAWM_Rsquared) %>%
+  pivot_longer(cols = -model, names_to = "Metric", values_to = "Value") %>%
+  mutate(Metric = recode(Metric,
+                         "HAWM_KGE" = "KGE",
+                         "HAWM_sd" = "Variability",
+                         "HAWM_RMSE" = "RMSE",
+                         "HAWM_Rsquared" = "Rsquared")) %>%
+  group_by(Metric) %>%
+  mutate(
+    # Normalize value within each metric, reversing Rsquared for higher=better
+    Normalized_Value = ifelse(
+      Metric == "Rsquared",
+      (Value - min(Value)) / (max(Value) - min(Value)),  # Rsquared higher is better
+      (max(Value) - Value) / (max(Value) - min(Value))   # Others lower is better
+    )
+  ) %>%
+  ungroup()
+
+# Filter out 'Variability' for coloring purposes but keep for ordering
+performance_metrics_long$fill_color <- ifelse(performance_metrics_long$Metric == "Variability", NA, performance_metrics_long$Normalized_Value)
+
+# Create the table plot 
+table_plot <- ggplot(performance_metrics_long, aes(x = Metric, y = reorder(model, Value), fill = fill_color)) +
+  geom_tile(color = "black") +  # Outline tiles
+  geom_text(aes(label = round(Value, 3)), color = "black", size = 3) +  # Add text labels
+  geom_vline(xintercept = 3.5, color = "black", size = 1.5) +  # Thicker line at x=2.5 (between columns 2 and 3)
+  scale_fill_viridis(
+    discrete = FALSE,
+    option = "viridis",
+     na.value = "white" , # Color for 'Variability' set to white 
+    name = "",  # Remove the legend title
+    breaks = c(0, 1),  
+    labels = c("Lower Performance", "Higher Performance")
+  )  +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+    axis.text.y = element_text(size = 10),
+    axis.title.x = element_blank(),  
+  axis.title.y = element_blank(), 
+    panel.grid = element_blank(),
+    legend.position = "bottom",
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 7),
+    legend.margin = margin(t = -10, unit = "pt"),  # Adjust top margin to move color bar closer
+  legend.spacing.y = unit(0.1, "pt")            # Reduce spacing between legend and plot
+  ) +
+    labs(x = "", y = "", fill = "") +  # Add a label to the color bar
+  guides(
+    fill = guide_colorbar(
+      title = NULL,
+      barwidth = 16,
+      barheight = 0.4,
+    )
+  ) 
+
+table_plot
+
+# Save the table plot
+ggsave(file.path(base_path, "GGCMI-validation/results/main/fig1c_PerformanceTableHAWM.png"),
+     table_plot, width = 6, height = 4, dpi = 300)
+```
+
+## Supplementary figure 1
+
+In addition to the table heatmap plot above, we also create a version without weighting for the harvest area, treating each grid cell as equally important when taking the average.
+
+```{r, warning = FALSE, message = FALSE}
+performance_metrics <- crop_data[["aggr"]] %>% 
+  inner_join(general_sim_aggr %>% dplyr::select(lat, lon, year, difftrend_sim, model), by = c("lat", "lon", "year")) %>% 
+   distinct() %>%
+  drop_na(difftrend_obs, difftrend_sim) %>% # Remove rows with NAs in either column
+  group_by(model, lat, lon) %>% 
+  filter(sd(difftrend_obs) > 0, sd(difftrend_sim) > 0) %>%
+  summarise(RMSE = rmse(difftrend_obs, difftrend_sim),
+            Rsquared = cor(difftrend_obs, difftrend_sim)^ 2,
+            KGE_components = calculate_kge(difftrend_obs, difftrend_sim),
+            sd = sd(difftrend_sim),
+           total_area = first(total_area)) %>% 
+  mutate(
+    KGE = KGE_components$KGE,
+    r = KGE_components$r,
+    Beta = KGE_components$Beta,
+    Alpha = KGE_components$Alpha
+  ) %>% dplyr::select(-KGE_components)  %>%  
+  group_by(model) %>% 
+  summarise(mean_RMSE = median(RMSE),
+            mean_Rsquared = median(Rsquared),
+            mean_KGE = median(KGE),
+            mean_Alpha = median(Alpha),
+            mean_beta = median(Beta),
+            mean_sd = median(sd)) %>% 
+  distinct()
+
+# Reshape and rename metric names for the table plot
+performance_metrics_long <- performance_metrics %>%
+  dplyr::select(model, mean_KGE, mean_sd, mean_RMSE, mean_Rsquared) %>%
+  pivot_longer(cols = -model, names_to = "Metric", values_to = "Value") %>%
+  mutate(Metric = recode(Metric,
+                         "mean_KGE" = "KGE",
+                         "mean_sd" = "Variability",
+                         "mean_RMSE" = "RMSE",
+                         "mean_Rsquared" = "Rsquared")) %>%
+  group_by(Metric) %>%
+  mutate(
+    # Normalize value within each metric, reversing Rsquared for higher=better
+    Normalized_Value = ifelse(
+      Metric == "Rsquared",
+      (Value - min(Value)) / (max(Value) - min(Value)),  # Rsquared higher is better
+      (max(Value) - Value) / (max(Value) - min(Value))   # Others lower is better
+    )
+  ) %>%
+  ungroup()
+
+# Filter out 'Variability' for coloring purposes but keep for ordering
+performance_metrics_long$fill_color <- ifelse(performance_metrics_long$Metric == "Variability", NA, performance_metrics_long$Normalized_Value)
+
+# Create the table plot 
+table_plot <- ggplot(performance_metrics_long, aes(x = Metric, y = reorder(model, Value), fill = fill_color)) +
+  geom_tile(color = "black") +  # Outline tiles
+  geom_text(aes(label = round(Value, 3)), color = "black", size = 3) +  # Add text labels
+  geom_vline(xintercept = 3.5, color = "black", size = 1.5) +  # Thicker line at x=2.5 (between columns 2 and 3)
+  scale_fill_viridis(
+    discrete = FALSE,
+    option = "viridis",
+     na.value = "white" , # Color for 'Variability' set to white 
+    name = "",  # Remove the legend title
+    breaks = c(0, 1),  
+    labels = c("Lower Performance", "Higher Performance")
+  )  +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+    axis.text.y = element_text(size = 10),
+    axis.title.x = element_blank(),  
+  axis.title.y = element_blank(), 
+    panel.grid = element_blank(),
+    legend.position = "bottom",
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 7),
+    legend.margin = margin(t = -10, unit = "pt"),  # Adjust top margin to move color bar closer
+  legend.spacing.y = unit(0.1, "pt")            # Reduce spacing between legend and plot
+  ) +
+    labs(x = "", y = "", fill = "") +  # Add a label to the color bar
+  guides(
+    fill = guide_colorbar(
+      title = NULL,
+      barwidth = 16,
+      barheight = 0.4,
+    )
+  ) 
+
+table_plot
+
+# Save the table plot
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig1_TablePerformanceMean.png"),
+     table_plot, width = 6, height = 4, dpi = 300)
+```
+
+## Supplementary figures 2-5
+
+For the appendix we recreate the global maps for each crop as well. Note that for wheat we only plot winter wheat (wwh) and for rice we chose for the first growing season rice (ri1).
+
+### Supplementary figure 2 – RICE (first growing season)
+
+```{r, warning = FALSE, message = FALSE}
+ens_map <- crop_data[["ri1"]] %>% 
+  group_by(lat, lon) %>% 
+ filter(sd(difftrend_obs) > 0, sd(difftrend_sim) > 0) %>% # only gridcells where the standard deviation is bigger than 0
+    summarise(rsquared = cor(difftrend_obs, difftrend_sim) ^2,
+             ctr = ctr) %>%
+distinct()
+
+map_rsquared <- base_map +
+  geom_tile(data = ens_map, aes(x = lon, y = lat, color = rsquared), size = 0.2) +
+  scale_color_viridis(name = expression(R^2), option = "viridis", limits = c(0, 0.75),
+                      guide = guide_colorbar(barwidth = unit(18, "cm"),  # Increase colorbar width
+                                            barheight = unit(1, "cm"),  # Set colorbar height
+                                            title.position = "top",  # Position title above the colorbar
+                                             title.vjust = 1,  # Add space between title and colorbar
+                                              title.hjust = 0.5  # Center the title
+                      ))+
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom", legend.title = element_text(size = 17))
+
+map_rsquared
+
+# Save the figure
+ggsave(file.path(base_path, "GGCMI-validation/results/main/suppfig2_GlobalPerformanceMap_ri1.png"), map_rsquared, width = 18, height = 8, dpi = 300)
+```
+
+### Supplementary figure 3 – (WINTER) WHEAT
+
+```{r, warning = FALSE, message = FALSE}
+ens_map <- crop_data[["wwh"]] %>% 
+  group_by(lat, lon) %>% 
+ filter(sd(difftrend_obs) > 0, sd(difftrend_sim) > 0) %>% # only gridcells where the standard deviation is bigger than 0
+    summarise(rsquared = cor(difftrend_obs, difftrend_sim) ^2,
+             ctr = ctr) %>%
+distinct()
+
+map_rsquared <- base_map +
+  geom_tile(data = ens_map, aes(x = lon, y = lat, color = rsquared), size = 0.2) +
+  scale_color_viridis(name = expression(R^2), option = "viridis", limits = c(0, 0.75),
+                      guide = guide_colorbar(barwidth = unit(18, "cm"),  # Increase colorbar width
+                                            barheight = unit(1, "cm"),  # Set colorbar height
+                                            title.position = "top",  # Position title above the colorbar
+                                             title.vjust = 1,  # Add space between title and colorbar
+                                              title.hjust = 0.5  # Center the title
+                      ))+
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom", legend.title = element_text(size = 17))
+
+map_rsquared
+
+# Save the figure
+ggsave(file.path(base_path, "GGCMI-validation/results/main/suppfig3_GlobalPerformanceMap_wwh.png"), map_rsquared, width = 18, height = 8, dpi = 300)
+```
+
+### Supplementary figure 4 – SOY
+
+```{r, warning = FALSE, message = FALSE}
+ens_map <- crop_data[["soy"]] %>% 
+  group_by(lat, lon) %>% 
+ filter(sd(difftrend_obs) > 0, sd(difftrend_sim) > 0) %>% # only gridcells where the standard deviation is bigger than 0
+    summarise(rsquared = cor(difftrend_obs, difftrend_sim) ^2,
+             ctr = ctr) %>%
+distinct()
+
+map_rsquared <- base_map +
+  geom_tile(data = ens_map, aes(x = lon, y = lat, color = rsquared), size = 0.2) +
+  scale_color_viridis(name = expression(R^2), option = "viridis", limits = c(0, 0.75),
+                      guide = guide_colorbar(barwidth = unit(18, "cm"),  # Increase colorbar width
+                                            barheight = unit(1, "cm"),  # Set colorbar height
+                                            title.position = "top",  # Position title above the colorbar
+                                             title.vjust = 1,  # Add space between title and colorbar
+                                              title.hjust = 0.5  # Center the title
+                      ))+
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom", legend.title = element_text(size = 17))
+
+map_rsquared
+
+# Save the figure
+ggsave(file.path(base_path, "GGCMI-validation/results/main/suppfig4_GlobalPerformanceMap_soy.png"), map_rsquared, width = 18, height = 8, dpi = 300)
+```
+
+### Supplementary figure 5 – MAIZE
+
+```{r, warning = FALSE, message = FALSE}
+ens_map <- crop_data[["mai"]] %>% 
+  group_by(lat, lon) %>% 
+ filter(sd(difftrend_obs) > 0, sd(difftrend_sim) > 0) %>% # only gridcells where the standard deviation is bigger than 0
+    summarise(rsquared = cor(difftrend_obs, difftrend_sim) ^2,
+             ctr = ctr) %>%
+distinct()
+
+map_rsquared <- base_map +
+  geom_tile(data = ens_map, aes(x = lon, y = lat, color = rsquared), size = 0.2) +
+  scale_color_viridis(name = expression(R^2), option = "viridis", limits = c(0, 0.75),
+                      guide = guide_colorbar(barwidth = unit(18, "cm"),  # Increase colorbar width
+                                            barheight = unit(1, "cm"),  # Set colorbar height
+                                            title.position = "top",  # Position title above the colorbar
+                                             title.vjust = 1,  # Add space between title and colorbar
+                                              title.hjust = 0.5  # Center the title
+                      ))+
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom", legend.title = element_text(size = 17))
+
+map_rsquared
+
+# Save the figure
+ggsave(file.path(base_path, "GGCMI-validation/results/main/suppfig5_GlobalPerformanceMap_mai.png"), map_rsquared, width = 18, height = 8, dpi = 300)
+```
