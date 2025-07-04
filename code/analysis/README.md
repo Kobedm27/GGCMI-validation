@@ -1,4 +1,4 @@
-# Quarto Notebooks
+# Analysis notebooks
 
 This folder contains all **Quarto notebooks (`.qmd`)** used in the analysis for the paper:
 
