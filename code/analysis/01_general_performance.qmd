@@ -200,14 +200,12 @@ Ashmore and Cartier Islands", name_long != "Indian Ocean Territories") %>%  # Ge
 # Create the base map
 base_map <- ggplot() +
   geom_sf(data = world_geometries, fill = "gray", color = "black", size = 0.2) +
+scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
   theme(
     panel.background = element_rect(fill = "white"),
-    panel.grid.major = element_blank(),  # Remove major gridlines
+   panel.grid.major = element_line(color = "gray80", size = 0.2),  # major gridlines
     panel.grid.minor = element_blank(),  # Remove minor gridlines
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-    plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm")  # Increase overall margins
   )
 
 base_map
@@ -218,6 +216,8 @@ Then we can plot the gridcell values on the base map to create the sub-figure
 ```{r, warning = FALSE, message = FALSE}
 map_rsquared <- base_map +
   geom_tile(data = ens_map_aggr, aes(x = lon, y = lat, color = rsquared), size = 0.2) +
+scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
   scale_color_viridis(name = expression(R^2), option = "viridis", limits = c(0, 0.75),
                       guide = guide_colorbar(barwidth = unit(18, "cm"),  # Increase colorbar width
                                             barheight = unit(1, "cm"),  # Set colorbar height
@@ -226,12 +226,12 @@ map_rsquared <- base_map +
                                               title.hjust = 0.5  # Center the title
                       ))+
   labs(x = "", y = "") +
-  theme(legend.position = "bottom", legend.title = element_text(size = 17))
+  theme(legend.position = "top")
 
 map_rsquared
 
 # Save the figure
-ggsave(file.path(base_path, "GGCMI-validation/results/main/fig1a_GlobalPerformanceMap.png"), map_rsquared, width = 18, height = 8, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/main/fig1a_GlobalPerformanceMap.png"), map_rsquared, width = 24, height = 12, dpi = 300)
 ```
 
 ### Latitudinal scatterplot
@@ -244,16 +244,16 @@ lat_plot <- ggplot(ens_map_aggr, aes(x = lat, y = rsquared)) +
   geom_point(alpha = 0.3, color = "#3288bd") +
   geom_smooth(method = "gam", color = "black", fill = "gray80") +
   labs(x = "Latitude", y = expression(R^2)) + 
-  theme(axis.title.x = element_text(size = 12), axis.title.y = element_text(size = 12)) +
+  theme(axis.title.x = element_text(size = 25), axis.title.y = element_text(size = 12)) +
   coord_flip() +
-  xlim(-45, 60) + # Limit latitude range between -45 and 60
+  scale_x_continuous(limits = c(-45, 60), breaks = c(-40, -20, 0, 20, 40))
   ylim(0, 1)
 
 lat_plot
 
 # Save the latitudinal plot
 ggsave(file.path(base_path, "GGCMI-validation/results/main/fig1b_LatitudinalScatter.png"),
-     lat_plot, width = 10, height = 8, dpi = 300)
+     lat_plot, width = 12, height = 12, dpi = 300)
 ```
 
 Finally, we also create a heatmap table showing the general global performance for all models across different type of performance metrics: RMSE, Rsquared, KGE. Next the to performance metrics we also show the variability (sd) and we order the models from high to low variability.
