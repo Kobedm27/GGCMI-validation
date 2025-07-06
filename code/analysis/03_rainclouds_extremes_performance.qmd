@@ -154,7 +154,7 @@ crops <- c("mai", "wwh", "ri1", "soy", "aggr")
 
 # Read each .rds file into a named list
 crop_data <- lapply(crops, function(crop) {
-  readRDS(file.path(base_path, paste0("extremes_", crop, ".rds")))
+  readRDS(file.path(base_path, paste0("GGCMI-validation/data/processed/figure_ready_data/extremes_", crop, ".rds")))
 })
 
 names(crop_data) <- crops
@@ -660,10 +660,10 @@ We need the unfiltered benchmark data to find out who the biggest producers are 
 ```{r, warning = FALSE, message = FALSE}
 # Read each .rds file into a named list
 crop_datageneral <- lapply(crops, function(crop) {
-  readRDS(file.path(base_path, paste0("general_", crop, ".rds")))
+  readRDS(file.path(base_path, paste0("GGCMI-validation/data/processed/figure_ready_data/general_", crop, ".rds")))
 })
 
-general_sim_aggr <- readRDS(file.path(base_path, "general_sim_aggr.rds"))
+general_sim_aggr <- readRDS(file.path(base_path, "GGCMI-validation/data/processed/figure_ready_data/general_sim_aggr.rds"))
 
 names(crop_datageneral) <- crops
 ```
