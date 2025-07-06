@@ -241,7 +241,7 @@ map_extremes <- base_map +
 map_extremes
 
 # Save the figure
-ggsave(file.path(base_path, "fig2_ExtremesPerformanceMap.png"), map_extremes, width = 18, height = 12, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/main/fig2_ExtremesPerformanceMap.png"), map_extremes, width = 18, height = 12, dpi = 300)
 ```
 
 ## Supplementary figures 6-9
@@ -294,7 +294,7 @@ map_extremes <- base_map +
 map_extremes
 
 # Save the figure
-ggsave(file.path(base_path, "suppfig6_ExtremesPerformanceMap.png"), map_extremes, width = 18, height = 12, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig6_ExtremesPerformanceMap.png"), map_extremes, width = 18, height = 12, dpi = 300)
 ```
 
 ### WINTER WHEAT
@@ -343,7 +343,7 @@ map_extremes <- base_map +
 map_extremes
 
 # Save the figure
-ggsave(file.path(base_path, "suppfig7_ExtremesPerformanceMap.png"), map_extremes, width = 18, height = 12, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig7_ExtremesPerformanceMap.png"), map_extremes, width = 18, height = 12, dpi = 300)
 ```
 
 ### SOY
@@ -392,7 +392,7 @@ map_extremes <- base_map +
 map_extremes
 
 # Save the figure
-ggsave(file.path(base_path, "suppfig8_ExtremesPerformanceMap.png"), map_extremes, width = 18, height = 12, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig8_ExtremesPerformanceMap.png"), map_extremes, width = 18, height = 12, dpi = 300)
 ```
 
 ### MAIZE
@@ -441,5 +441,5 @@ map_extremes <- base_map +
 map_extremes
 
 # Save the figure
-ggsave(file.path(base_path, "suppfig9_ExtremesPerformanceMap.png"), map_extremes, width = 18, height = 12, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig9_ExtremesPerformanceMap.png"), map_extremes, width = 18, height = 12, dpi = 300)
 ```
