@@ -66,7 +66,7 @@ detr_obs <- aggr_bench %>%
   mutate(year = as.numeric(year),
         yield = aggregated_yield_obs) %>% 
   ungroup() %>%
-dplyr::select(lon, lat, yield, year, total_area, divtrend_obs, difftrend_obs) %>%
+dplyr::select(lon, lat, yield, year, total_area, divtrend_obs, difftrend_obs, ctr) %>%
 distinct(lon, lat, year, .keep_all = TRUE)
 
 ```
