@@ -147,7 +147,7 @@ Then we can load our data:
 ```{r, warning = FALSE, message = FALSE}
 base_path <- "C:/Users/kobed/Documents/TOAD-PIKlegacy" # Where is the code repo stored?
 
-crop_data <- readRDS(file.path(base_path, "extremes_aggr.rds"))
+crop_data <- readRDS(file.path(base_path, "GGCMI-validation/data/processed/figure_ready_data/extremes_aggr.rds"))
 ```
 
 We have to join rnaturalearth regions to create these regional heatmaps
@@ -270,7 +270,7 @@ heatmap_plot <- heatmap_data %>%
 heatmap_plot
 
 # Save the heatmap
-ggsave(file.path(base_path, "fig5_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/main/fig5_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
 ```
 
 ## Supplementary figures 34-36: decomposition of the KGE heatmap
@@ -321,7 +321,7 @@ heatmap_plot <- heatmap_data %>%
 heatmap_plot
 
 # Save the heatmap
-ggsave(file.path(base_path, "suppfig34_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig34_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
 ```
 
 ### Beta
@@ -370,7 +370,7 @@ heatmap_plot <- heatmap_data %>%
 heatmap_plot
 
 # Save the heatmap
-ggsave(file.path(base_path, "suppfig35_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig35_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
 ```
 
 ### r
@@ -417,7 +417,7 @@ heatmap_plot <- heatmap_data %>%
 heatmap_plot
 
 # Save the heatmap
-ggsave(file.path(base_path, "suppfig36_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig36_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
 ```
 
 ## Supplementary figure 37: hit rate heatmap
@@ -494,7 +494,7 @@ heatmap_plot <- heatmap_data %>%
 heatmap_plot
 
 # Save the heatmap
-ggsave(file.path(base_path, "suppfig37_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig37_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
 ```
 
 ## Supplementary figure 38: regions
@@ -525,5 +525,5 @@ labs(x = "", y = "") +
 regions_plot
 
 # Save the plot 
-ggsave(file.path(base_path, "suppfig38_Regions.png"), regions_plot, width = 28, height = 15, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig38_Regions.png"), regions_plot, width = 28, height = 15, dpi = 300)
 ```
