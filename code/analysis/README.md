@@ -12,7 +12,7 @@ All notebooks are written in **R** using [Quarto](https://quarto.org).
 - `01_general_performance` — Creates figures to analyse the model performance under general conditions
 - `02_spatial_extremes_performance` — Creates figures to spatially analyze model ensemble performance under extremes
 - `03_rainclouds_extremes_performance` — Creates figures to analyze each model's performance in terms of over and underestimation
-- 
+- `04_heatmaps_extremes_performance` — Creates regional heatmap figures analyzing model's performance in terms of KGE and hit rate. 
 
 ## Reproducibility
 
