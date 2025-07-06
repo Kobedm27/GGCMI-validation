@@ -284,7 +284,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "fig4_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/main/fig4_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ## Supplementary figures 10-13 – rainclouds per crop
@@ -377,7 +377,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig10_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig10_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### WHEAT
@@ -468,7 +468,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig11_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig11_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### SOY
@@ -559,7 +559,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig12_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig12_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### MAIZE
@@ -650,7 +650,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig13_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig13_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ## Supplementary figures 14-18 – rainclouds for top producers
@@ -778,7 +778,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig14_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig14_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### RICE
@@ -890,7 +890,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig15_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig15_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### WHEAT
@@ -1002,7 +1002,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig16_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig16_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### SOY
@@ -1114,7 +1114,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig17_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig17_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### MAIZE
@@ -1226,7 +1226,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig18_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "sGGCMI-validation/results/appendix/uppfig18_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ## Supplementary figures 19-23 – rainclouds for absolute detrending
@@ -1313,7 +1313,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig19_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig19_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### RICE
@@ -1398,7 +1398,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig20_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig20_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### WHEAT
@@ -1483,7 +1483,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig21_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig21_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### SOY
@@ -1568,7 +1568,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig22_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig22_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### MAIZE
@@ -1653,7 +1653,7 @@ raincloud_perc <- dat_long %>%
 raincloud_perc
 
 # Save the figure 
-ggsave(file.path(base_path, "suppfig23_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig23_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ## Supplementary figures 24-28 – rainclouds for relative model error
@@ -1722,7 +1722,7 @@ mutate(error_perc = (divtrend_obs - 1)*100 - (divtrend_sim - 1)*100) %>%
 
 raincloud_perc
 
-ggsave(file.path(base_path, "suppfig24_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig24_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### RICE
@@ -1787,7 +1787,7 @@ mutate(error_perc = (divtrend_obs - 1)*100 - (divtrend_sim - 1)*100) %>%
 
 raincloud_perc
 
-ggsave(file.path(base_path, "suppfig25_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig25_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### WHEAT
@@ -1852,7 +1852,7 @@ mutate(error_perc = (divtrend_obs - 1)*100 - (divtrend_sim - 1)*100) %>%
 
 raincloud_perc
 
-ggsave(file.path(base_path, "suppfig26_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig26_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### SOY
@@ -1917,7 +1917,7 @@ mutate(error_perc = (divtrend_obs - 1)*100 - (divtrend_sim - 1)*100) %>%
 
 raincloud_perc
 
-ggsave(file.path(base_path, "suppfig27_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig27_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### MAIZE
@@ -1982,7 +1982,7 @@ mutate(error_perc = (divtrend_obs - 1)*100 - (divtrend_sim - 1)*100) %>%
 
 raincloud_perc
 
-ggsave(file.path(base_path, "suppfig28_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig28_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ## Supplementary figures 29-33 – rainclouds for absolute model error
@@ -2047,7 +2047,7 @@ mutate(error = difftrend_obs - difftrend_sim) %>%
 
 raincloud_perc
 
-ggsave(file.path(base_path, "suppfig29_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig29_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### RICE
@@ -2110,7 +2110,7 @@ mutate(error = difftrend_obs - difftrend_sim) %>%
 
 raincloud_perc
 
-ggsave(file.path(base_path, "suppfig30_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig30_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### WHEAT
@@ -2173,7 +2173,7 @@ mutate(error = difftrend_obs - difftrend_sim) %>%
 
 raincloud_perc
 
-ggsave(file.path(base_path, "suppfig31_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig31_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### SOY
@@ -2236,7 +2236,7 @@ mutate(error = difftrend_obs - difftrend_sim) %>%
 
 raincloud_perc
 
-ggsave(file.path(base_path, "suppfig32_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig32_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
 
 ### MAIZE
@@ -2299,5 +2299,5 @@ mutate(error = difftrend_obs - difftrend_sim) %>%
 
 raincloud_perc
 
-ggsave(file.path(base_path, "suppfig33_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig33_RaincloudExtremes.png"), raincloud_perc, width = 18, height = 20, dpi = 300)
 ```
