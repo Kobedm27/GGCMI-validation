@@ -1,6 +1,6 @@
 # Analysis notebooks
 
-This folder contains all **Quarto notebooks (`.qmd`)** used in the analysis for the paper:
+This folder contains all **Quarto notebooks (both as `.qmd` and `.html`)** used in the analysis for the paper:
 
 **"Global Gridded Crop Models underestimate yield losses from climatic extremes"**
 
@@ -8,9 +8,10 @@ All notebooks are written in **R** using [Quarto](https://quarto.org).
 
 ## File overview
 
-- `regrid_crop_yield.py` — Regrids crop yield data to a common spatial resolution
-- `merge_climate_fields.py` — Combines temperature and precipitation into a single dataset
-- `convert_netcdf_to_csv.py` — Converts selected NetCDF variables into tabular format for import into R
+- `00_filtering_extremes` — Filters the datasets for extremes, gets rid of "marginal" land and produces model ensemble median
+- `01_general_performance` — Creates figures to analyse the model performance under general conditions
+- `02_spatial_extremes_performance` — Creates figures to spatially analyze model ensemble performance under extremes
+- 
 
 ## Reproducibility
 
