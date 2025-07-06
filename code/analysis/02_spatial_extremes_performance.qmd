@@ -146,7 +146,7 @@ crops <- c("mai", "wwh", "ri1", "soy", "aggr")
 
 # Read each .rds file into a named list
 crop_data <- lapply(crops, function(crop) {
-  readRDS(file.path(base_path, paste0("extremes_", crop, ".rds")))
+  readRDS(file.path(base_path, paste0("GGCMI-validation/data/processed/figure_ready_data/extremes_", crop, ".rds")))
 })
 
 names(crop_data) <- crops
