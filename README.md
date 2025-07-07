@@ -14,7 +14,6 @@ Author(s) (2025). Global Gridded Crop Models underestimate yield losses from cli
 - `code/`: Scripts and notebooks for data processing and analysis
 - `data/`: Data used in the study (raw data access instructions provided)
 - `results/`: Final figures and tables
-- `paper/`: Manuscript and supplementary materials
 
 ## Crop abbreviations
 
@@ -36,7 +35,6 @@ cd GGCMI-validation
 ```
 
 ## License
+Licensed under the [MIT license](LICENSE).
 
-- Code and processed data is licensed under the [MIT license](LICENSE).
--  Raw data: Not publicly available; available on request.
 
