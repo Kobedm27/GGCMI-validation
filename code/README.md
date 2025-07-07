@@ -2,7 +2,7 @@
 
 This project includes both R and Python code used to conduct the analysis in:
 
-**"Global Gridded Crop Models Underestimate Yield Losses from Climatic Extremes"**
+**"Global Gridded Crop Models underestimate yield losses from climatic extremes"**
 
 ## Structure
 
