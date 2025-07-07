@@ -1,7 +1,7 @@
 # Data
 
 This directory contains the data used in the study:  
-**"Global Gridded Crop Models Underestimate Yield Losses from Climatic Extremes"**
+**"Global Gridded Crop Models underestimate yield losses from climatic extremes"**
 
 ## Structure
 
