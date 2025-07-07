@@ -141,14 +141,14 @@ set_theme(theme_Scherer())
 Loading the data
 
 ```{r, warning = FALSE, message = FALSE}
-base_path <- "C:/Users/kobed/Documents/TOAD-PIKlegacy" # Where is the code repo stored?
+base_path <- "" # Where is the code repo stored?
 
 # List of crops
 crops <- c("mai", "wwh", "ri1", "soy") 
 
 # Read each .rds file into a named list
 crop_data <- lapply(crops, function(crop) {
-  readRDS(file.path(base_path, paste0("extremes_", crop, ".rds")))
+  readRDS(file.path(base_path, paste0("GGCMI-validation/data/processed/figure_ready_data/extremes_", crop, ".rds")))
 })
 names(crop_data) <- crops
 ```
@@ -381,7 +381,7 @@ forest_plot <- ggplot(plot_data, aes(x = estimate, y = label, color = effect_gro
 forest_plot
 
 # Save the plot
-ggsave(file.path(base_path, "fig5_CharacteristicsExtremes.png"), forest_plot, width = 14, height = nrow(plot_data) * 0.15 + 4, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/main/fig5_CharacteristicsExtremes.png"), forest_plot, width = 14, height = nrow(plot_data) * 0.15 + 4, dpi = 300)
 ```
 
 ## Supplementary figure 39 - intercept odds
@@ -446,5 +446,5 @@ plot <- ggplot(all_intercepts_df, aes(x = estimate, y = combo)) +
 
 plot
 
-ggsave(file.path(base_path, "suppfig39_CharacteristicsExtremes.png"), plot, width = 14, height = nrow(plot_data) * 0.15 + 4, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig39_CharacteristicsExtremes.png"), plot, width = 14, height = nrow(plot_data) * 0.15 + 4, dpi = 300)
 ```
