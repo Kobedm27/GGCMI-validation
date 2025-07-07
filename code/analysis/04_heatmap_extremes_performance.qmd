@@ -272,7 +272,7 @@ heatmap_plot <- heatmap_data %>%
 heatmap_plot
 
 # Save the heatmap
-ggsave(file.path(base_path, "GGCMI-validation/results/main/fig5_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/main/fig4_HeatmapExtremes.png"), heatmap_plot, width = 15, height = 20, dpi = 300)
 ```
 
 ## Supplementary figures 34-36: decomposition of the KGE heatmap
