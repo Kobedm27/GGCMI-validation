@@ -7,13 +7,13 @@ This repository contains the code supporting the paper:
 
 Please cite this work as:
 
-Author(s) (2025). Global Gridded Crop Models underestimate yield losses from climatic extremes. Nature Climate Change (submitted). DOI: TBD
+Cornelia Auer, Kobe De Maeyer,...(2025). Global Gridded Crop Models underestimate yield losses from climatic extremes. Nature Climate Change (submitted). DOI: TBD
 
 ## Contents
 
 - `code/`: Scripts and notebooks for data processing and analysis
-- `data/`: Data used in the study (raw data access instructions provided)
-- `results/`: Final figures and tables
+- `data/`: Raw and processed data used in the study (raw data access instructions provided)
+- `results/`: Folders where final figures and tables will be stored
 
 ## Crop abbreviations
 
@@ -31,8 +31,10 @@ To reproduce the analysis:
 ```bash
 git clone https://github.com/Kobedm27/GGCMI-validation.git
 cd GGCMI-validation
-# Follow instructions in code/README.md
 ```
+First run all code under `cropdata_preprocessing`, then `climdata_preprocessing`, and finally one can run the notebooks under `analysis`
+
+The code is structured to store all intermediate data and final figures in predefined folders within the repository.
 
 ## License
 Licensed under the [MIT license](LICENSE).
