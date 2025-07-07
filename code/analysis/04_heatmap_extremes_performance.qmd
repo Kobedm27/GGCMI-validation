@@ -22,6 +22,8 @@ This notebook will guide you through the code to plot regional heatmaps of model
 
 -   Supplementary figure 38: regions used in the heatmap indicated on a world map
 
+Additionally, we also count per region how many extreme events occurred in the filtered data for aggregated crops. This gives an idea of how many data points where considered in the heatmap.
+
 The fully processed and filtered data files, available under GGCMI-validation/data/processed/figure_ready_data are required to produce the figures.
 :::
 
@@ -526,4 +528,21 @@ regions_plot
 
 # Save the plot 
 ggsave(file.path(base_path, "GGCMI-validation/results/appendix/suppfig38_Regions.png"), regions_plot, width = 28, height = 15, dpi = 300)
+```
+
+## Regional occurrences of extreme events
+
+Here we will count how many extremes events (grid cell-year combinations) occur in our filtered data. We integrate these counts into the excel file in the supplementary information as a separate sheet. We only do this for aggregated crops as the heatmaps are made based on this.
+
+```{r, warning = FALSE, message = FALSE}
+# Summarize occurrences
+summary_table <- crop_data %>%
+ distinct(lat, lon, year, climate_extreme, subregion) %>%
+  group_by(climate_extreme, subregion) %>%
+  summarise(Occurrences = n_distinct(interaction(lat, lon, year)), .groups = "drop")
+
+summary_table
+
+# Export to Excel
+write_xlsx(summary_table, file.path(base_path, "GGCMI-validation/results/appendix/regional_occurrences.xlsx"))
 ```
