@@ -1,0 +1,450 @@
+---
+title: "Model characteristics analysis using Generalized Linear Mixed Models (GLMMs)"
+format: 
+  html: 
+    toc: true
+    code-fold: true
+    code-summary: "Show the code"
+    embed-resources: true
+    self-contained-math: true
+editor: visual
+---
+
+::: {.callout-note title="Overview" icon="false"}
+This notebook will guide you through the code to fit generalized linear mixed models to the data per crop and extreme type analyzing the effects of model characteristics on the odds of underestimating crop losses. The analysis is done in R. The following figures will be computed:
+
+-   Figure 5: faceted forest plot showing per crop and extreme the resulting 90% confidence intervals of the odds ratios for each model characteristic inferred from the GLMMs
+
+-   Supplementary figure 39: forest plot showing the 90% confidence intervals of the odds for the intercepts of the GLMMs for each combination of crop and extreme type.
+
+The fully processed and filtered data files, available under GGCMI-validation/data/processed/figure_ready_data are required to produce the figures.
+:::
+
+We load the libraries
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse) # Includes dplyr, ggplot2, readr, etc.
+library(lme4) # for fitting GLMMs
+library(broom.mixed) # to summarise model fits
+library(sjPlot) # to set and configure plotting theme
+library(spdep) # for spatial functions
+library(tibble)  # to create model feature table
+```
+
+We set the theme
+
+```{r, warning = FALSE, message=FALSE}
+theme_Scherer <- function (base_size = 12, base_family = "Helvetica") {
+  half_line <- base_size/2
+  theme(
+    line = element_line(color = "black", linewidth = .5,
+                        linetype = 1, lineend = "butt"),
+    rect = element_rect(fill = "white", color = "black",
+                        linewidth = .5, linetype = 1),
+    text = element_text(family = base_family, face = "plain",
+                        color = "black", size = base_size,
+                        lineheight = .9, hjust = .5, vjust = .5,
+                        angle = 0, margin = margin(), debug = FALSE),
+    axis.line = element_blank(),
+    axis.line.x = NULL,
+    axis.line.y = NULL,
+    axis.text = element_text(size = base_size * 1.1, color = "gray30"),
+    axis.text.x = element_text(margin = margin(t = .8 * half_line/2),
+                               vjust = 1),
+    axis.text.x.top = element_text(margin = margin(b = .8 * half_line/2),
+                                   vjust = 0),
+    axis.text.y = element_text(margin = margin(r = .8 * half_line/2),
+                               hjust = 1),
+    axis.text.y.right = element_text(margin = margin(l = .8 * half_line/2),
+                                     hjust = 0),
+    axis.ticks = element_line(color = "gray30", linewidth = .7),
+    axis.ticks.length = unit(half_line / 1.5, "pt"),
+    axis.ticks.length.x = NULL,
+    axis.ticks.length.x.top = NULL,
+    axis.ticks.length.x.bottom = NULL,
+    axis.ticks.length.y = NULL,
+    axis.ticks.length.y.left = NULL,
+    axis.ticks.length.y.right = NULL,
+    axis.title.x = element_text(margin = margin(t = half_line),
+                                vjust = 1, size = base_size * 1.3,
+                                face = "bold"),
+    axis.title.x.top = element_text(margin = margin(b = half_line),
+                                    vjust = 0),
+    axis.title.y = element_text(angle = 90, vjust = 1,
+                                margin = margin(r = half_line),
+                                size = base_size * 1.3, face = "bold"),
+    axis.title.y.right = element_text(angle = -90, vjust = 0,
+                                      margin = margin(l = half_line)),
+    legend.background = element_rect(color = NA),
+    legend.spacing = unit(.4, "cm"),
+    legend.spacing.x = NULL,
+    legend.spacing.y = NULL,
+    legend.margin = margin(.2, .2, .2, .2, "cm"),
+    legend.key = element_rect(fill = "gray95", color = "white"),
+    legend.key.size = unit(1.2, "lines"),
+    legend.key.height = NULL,
+    legend.key.width = NULL,
+    legend.text = element_text(size = rel(.8)),
+    legend.text.align = NULL,
+    legend.title = element_text(hjust = 0),
+    legend.title.align = NULL,
+    legend.position = "right",
+    legend.direction = NULL,
+    legend.justification = "center",
+    legend.box = NULL,
+    legend.box.margin = margin(0, 0, 0, 0, "cm"),
+    legend.box.background = element_blank(),
+    legend.box.spacing = unit(.4, "cm"),
+    panel.background = element_rect(fill = "white", color = NA),
+    panel.border = element_rect(color = "gray30",
+                                fill = NA, linewidth = .7),
+    panel.grid.major = element_line(color = "gray90", linewidth = 1),
+    panel.grid.minor = element_line(color = "gray90", linewidth = .5,
+                                    linetype = "dashed"),
+    panel.spacing = unit(base_size, "pt"),
+    panel.spacing.x = NULL,
+    panel.spacing.y = NULL,
+    panel.ontop = FALSE,
+    strip.background = element_rect(fill = "white", color = "gray30"),
+    strip.text = element_text(color = "black", size = base_size),
+    strip.text.x = element_text(margin = margin(t = half_line,
+                                                b = half_line)),
+    strip.text.y = element_text(angle = -90,
+                                margin = margin(l = half_line,
+                                                r = half_line)),
+    strip.text.y.left = element_text(angle = 90),
+    strip.placement = "inside",
+    strip.placement.x = NULL,
+    strip.placement.y = NULL,
+    strip.switch.pad.grid = unit(0.1, "cm"),
+    strip.switch.pad.wrap = unit(0.1, "cm"),
+    plot.background = element_rect(color = NA),
+    plot.title = element_text(size = base_size * 1.8, hjust = .5,
+                              vjust = 1, face = "bold",
+                              margin = margin(b = half_line * 1.2)),
+    plot.title.position = "panel",
+    plot.subtitle = element_text(size = base_size * 1.3,
+                                 hjust = .5, vjust = 1,
+                                 margin = margin(b = half_line * .9)),
+    plot.caption = element_text(size = rel(0.9), hjust = 1, vjust = 1,
+                                margin = margin(t = half_line * .9)),
+    plot.caption.position = "panel",
+    plot.tag = element_text(size = rel(1.2), hjust = .5, vjust = .5),
+    plot.tag.position = "topleft",
+    plot.margin = margin(rep(base_size, 4)),
+    complete = TRUE
+  )
+}
+set_theme(theme_Scherer())
+```
+
+Loading the data
+
+```{r, warning = FALSE, message = FALSE}
+base_path <- "C:/Users/kobed/Documents/TOAD-PIKlegacy" # Where is the code repo stored?
+
+# List of crops
+crops <- c("mai", "wwh", "ri1", "soy") 
+
+# Read each .rds file into a named list
+crop_data <- lapply(crops, function(crop) {
+  readRDS(file.path(base_path, paste0("extremes_", crop, ".rds")))
+})
+names(crop_data) <- crops
+```
+
+## Fitting the GLMM
+
+we first have to prepare the data by creating a binary variable indicating whether underestimation takes place or not and by creating binary characteristics variables, indicating if the model simulating the observation has the corresponding characteristic or not. We also create a variable for each lat-llon combination (grid cell, location ID).
+
+```{r, warning = FALSE, message = FALSE}
+data_GLMM_list <- list()
+
+for (crop in crops) {
+  data_GLMM_list[[crop]] <- crop_data[[crop]] %>%
+    filter(crop == !!crop, model != "ensemble") %>% #exclude model ensemble
+    mutate(
+        # Underestimation or not?
+      under_pred = as.integer(difftrend_sim > difftrend_obs),
+
+        # Binary variables for model characteristics 
+      soilCN = ifelse(model %in% c("dssat-pythia", "epic-iiasa", "isam", "ldndc", "lpj-guess", "lpjml", "pepic", "simplace-lintul5", "pdssat"), 1, 0),
+      waterlogging = ifelse(model %in% c("dssat-pythia", "epic-iiasa", "pepic", "acea", "cygma1p74"), 1, 0),
+      photosynthesis = ifelse(model %in% c("crover", "isam", "ldndc", "lpj-guess", "lpjml", "promet", "pdssat"), 1, 0),
+      complexTstress = ifelse(model %in% c("acea", "isam", "promet", "pdssat"), 1, 0),
+      varroots = ifelse(model %in% c("acea", "dssat-pythia", "epic-iiasa", "isam", "pepic", "promet", "simplace-lintul5", "pdssat"), 1, 0),
+      dynamicHI = ifelse(model %in% c("acea", "dssat-pythia", "epic-iiasa", "isam", "pepic", "promet", "simplace-lintul5", "pdssat", "ldndc", "lpj-guess", "cygma1p74"), 1, 0),
+        
+      model = as.factor(model)
+    ) %>%
+    group_by(lon, lat) %>%
+    # Add a gridcell_ID for each lon-lat combination
+    mutate(gridcell_id = cur_group_id()) %>%
+    ungroup() %>%
+    dplyr::select(gridcell_id, model, lon, lat, year, dynamicHI, varroots, complexTstress, photosynthesis, waterlogging, soilCN, under_pred, climate_extreme)
+}
+```
+
+Here, we list the 6 different model characteristics with their abbreviations that we will use throughout the analysis and figure.
+
+-   **soilCN**: models that incorporate carbon and nitrogen dynamics in the soil
+
+-   **waterlogging**: models that account for waterlogging effects (too much water)
+
+-   **photosynthesi**s: models that have dynamic/explicit photosynthesis rather than a fixed radiative use efficiency (RUE)
+
+-   **varroots**: models that model the crop roots in function of temperature and/or water
+
+-   **dynamicHI**: models with a dynamic harvest index (depending on external stresses) instead of a fixed harvest index
+
+-   **complexTstress**: models with a more complex implementation of temperature stress
+
+Let's create a quick table listing which model has which features. A more detailed table and information on the characteristics can be found in the supplementary information of the paper.
+
+```{r, warning = FALSE, message = FALSE}
+# List of all models
+models <- c("acea", "crover", "cygma1p74", "dssat-pythia", "epic-iiasa", "isam", 
+            "ldndc", "lpj-guess", "lpjml", "pepic", "promet", "simplace-lintul5", "pdssat")
+
+# Create table with binary indicators
+model_features <- tibble(model = models) %>%
+  mutate(
+    soilCN = ifelse(model %in% c("dssat-pythia", "epic-iiasa", "isam", "ldndc", "lpj-guess", "lpjml", "pepic", "simplace-lintul5", "pdssat"), 1, 0),
+    waterlogging = ifelse(model %in% c("dssat-pythia", "epic-iiasa", "pepic", "acea", "cygma1p74"), 1, 0),
+    photosynthesis = ifelse(model %in% c("crover", "isam", "ldndc", "lpj-guess", "lpjml", "promet", "pdssat"), 1, 0),
+    complexTstress = ifelse(model %in% c("acea", "isam", "promet", "pdssat"), 1, 0),
+    varroots = ifelse(model %in% c("acea", "dssat-pythia", "epic-iiasa", "isam", "pepic", "promet", "simplace-lintul5", "pdssat"), 1, 0),
+    dynamicHI = ifelse(model %in% c("acea", "dssat-pythia", "epic-iiasa", "isam", "pepic", "promet", "simplace-lintul5", "pdssat", "ldndc", "lpj-guess", "cygma1p74"), 1, 0)
+  )
+
+# View the table
+print(model_features)
+```
+
+Then we define the Generalized Linear Mixed-Effects Model (GLMM) with a binomial distribution (logistic link) to estimate the binary outcome of underestimation or not. Note that we define the fixed effects of the model based on the extreme type, so waterlogging we only test under wet extremes, while complex temperature stress only under dry and hot conditions. This is to avoid complete separation in the fit and avoid redundant results. Note that some crops are not simulated by all 13 models, which makes it tricky to include all characteristics for fewer models without complete separation. The random effects remain for each GLMM the same, including a spatial (gridcell_id), temporal (year) and model factor. These are essential to infer the results of the GLMM and to be able to make statements about a "larger population" avoiding overconfident results for the fixed effects as the random effects account for additional variations between locations, years and models that cannot be captured by the fixed effects alone. This is a common practice in hierarchical datasets such as ours and also prevents us from violating the assumption of independence: observations from the same grid cell or same year or same model are not really independent and we have to inform our GLMM about this to avoid overconfident effects.
+
+```{r, warning = FALSE, message = FALSE}
+run_GLMM <- function(data_model, extreme) {
+
+     # Define random effects (always included)
+  random_effects <- "(1|gridcell_id) + (1|year) + (1|model)"
+  
+  # Define fixed effects based on extreme type
+  fixed_effects <- switch(extreme,
+    "Dry" = "dynamicHI + varroots + photosynthesis + soilCN + complexTstress",
+    "Wet" = "dynamicHI + varroots + photosynthesis + soilCN + waterlogging",
+    "Hot" = "dynamicHI + varroots + photosynthesis + soilCN + complexTstress",
+    stop("Unknown extreme: must be one of 'Dry', 'Wet', or 'Hot'")
+  )
+
+  # Combine into full formula
+  model_formula <- as.formula(
+    paste("under_pred ~", fixed_effects, "+", random_effects)
+  )
+  
+  # Fit and return the model
+  glmer(model_formula, data = data_model, family = binomial())
+}
+```
+
+Then we are set to fit the model for each combination of crop and extreme type. We provide for each of the twelve models a statistical summary of the fit and results in terms of odds (ratios), i.e. exponentiated log-odds.
+
+```{r, warning = FALSE, message = FALSE}
+# Define climate extremes
+extremes = c("Dry", "Hot", "Wet")
+
+# Define a list to store the GLMMs
+GLMM_results <- list()
+
+# Loop over crops and extremes
+for (crop in crops) { # start the crops loop
+    cat("Processing:", crop, "\n")
+    
+    for (extreme in extremes){ # start extremes loop
+        cat("Processing:", extreme, "\n")
+        
+        data_GLMM = data_GLMM_list[[crop]] %>%
+        filter(climate_extreme == extreme)
+
+        model <- run_GLMM(data_GLMM, extreme)
+        GLMM_results[[paste(crop, extreme, sep = "_")]] <- model
+
+        print(broom.mixed::tidy(model, exponentiate = TRUE, conf.int = TRUE)) # statistical summary
+   
+    } # end of the extremes loop
+} # end of the crops loop
+```
+
+## Visualising the results - figure 5
+
+We first create a function to extract all the 90% confidence intervals from the fits
+
+```{r, warning = FALSE, message = FALSE}
+extract_CI <- function(GLMM, crop, extreme) {
+  broom.mixed::tidy(GLMM, effects = "fixed", conf.int = TRUE, conf.level = 0.90, exponentiate = TRUE) %>% # Extract odds from the fixed effects
+    mutate(crop = crop,
+           extreme = extreme) %>%
+    dplyr::select(term, estimate, conf.low, conf.high, crop, extreme)
+}
+```
+
+Then we loop over all GLMMs to extract the CIs and store them in a list
+
+```{r, warning = FALSE, message = FALSE}
+all_GLMM_summaries <- list()
+
+for (crop in crops) { # Start crops loop
+  for (extreme in extremes) { # Start extremes loop
+
+       GLMM <- GLMM_results[[paste(crop, extreme, sep = "_")]]
+
+      # Extract summary
+    GLMM_summary <- extract_CI(GLMM, crop, extreme)
+    
+      # Store results
+   all_GLMM_summaries[[paste(crop, extreme, sep = "_")]] <- GLMM_summary
+
+      } # End extremes loop
+    } # End crops loop
+```
+
+Then we bind the outputs into one large dataframe for visualisation purpose, we only keep information on the fixed effects.
+
+```{r, warning = FALSE, message = FALSE}
+fixed_effects <- c("dynamicHI", "varroots", "photosynthesis", "soilCN", "waterlogging", "complexTstress")
+
+GLMM_df <- bind_rows(all_GLMM_summaries) %>%
+ filter(term %in% fixed_effects)
+
+GLMM_df
+```
+
+Finally, we can make a forest plot with the CIs as visual synthesis of the results. Note that we only visualise odds ratios, so exponentiated log-odds ratios. Odds ratios express the change in odds of including the corresponding characteristic compared to the intercept without the characteristic.
+
+```{r, warning = FALSE, message = FALSE, fig.width = 14, fig.height = 20}
+# Prepare data with effect classification and formatting
+plot_data <- GLMM_df %>%
+  mutate(
+    crop = recode(crop,
+      "mai" = "Maize",
+      "ri1" = "Rice",
+      "soy" = "Soybean",
+      "wwh" = "Wheat"),
+      term = recode(term, 
+                     "varroots" = "variable roots",
+                    "dynamicHI" = "dynamic harvest index",
+                    "complexTstress" = "complex temperature stress",
+                    "photosynthesis" = "explicit photosynthesis",
+                    "waterlogging" = "waterlogging stress",
+                    "soilCN" = "soil carbon and nitrogen cycling"),
+    or_label = sprintf("%.2f", estimate),
+    effect_group = case_when(
+      conf.low <= 1 & conf.high >= 1 ~ "No significant effect",  # CI includes 1
+      estimate < 1 ~ "Decreases odds of underestimating\nimpact of climatic extremes",
+      estimate > 1 ~ "Increases odds of underestimating\nimpact of climatic extremes"
+    ),
+    label = term  # Only show term on y-axis
+  ) %>%
+  arrange(desc(estimate)) %>%
+  mutate(label = factor(label, levels = rev(unique(label))))  # Reverse y-axis order
+
+# Color palette
+effect_colors <- c(
+  "Increases odds of underestimating\nimpact of climatic extremes" = "#D73027",  # Red
+  "Decreases odds of underestimating\nimpact of climatic extremes" = "#4575B4",  # Blue
+  "No significant effect" = "gray60"                                             # Gray
+)
+
+# Create the forest plot
+forest_plot <- ggplot(plot_data, aes(x = estimate, y = label, color = effect_group)) +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.3, size = 1) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "black", size = 1) +
+  geom_text(aes(label = or_label), vjust = -1, size = 3.1, color = "black") +
+  scale_color_manual(values = effect_colors, guide = "none") +
+  scale_x_log10(
+    name = "Effect of model characteristic on odds of underestimating yield loss (odds ratio)",
+    breaks = c(0.03, 0.05, 0.1, 0.2, 0.4, 0.67, 1, 1.5, 2, 3, 5, 10, 20, 30), # create log scale
+  labels = c("0.03", "0.05", "0.1", "0.2", "0.4", "0.67", "1", "1.5", "2", "3", "5", "10", "20", "30"),
+  limits = c(0.03, 30),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  facet_grid(crop ~ extreme, scales = "free_y") +  # 4 rows x 3 columns
+  labs(y = "Crop model characteristics") +
+  theme_Scherer(base_size = 12) +
+  theme(
+    axis.text.x = element_text(size = 8),
+    strip.text = element_text(size = 11, face = "bold"),
+    panel.grid.major.y = element_blank()
+  )
+
+forest_plot
+
+# Save the plot
+ggsave(file.path(base_path, "fig5_CharacteristicsExtremes.png"), forest_plot, width = 14, height = nrow(plot_data) * 0.15 + 4, dpi = 300)
+```
+
+## Supplementary figure 39 - intercept odds
+
+To really interpret the synthesis plot with odds ratios more thoroughly, one needs to know what the odds of the intercept are to know if the effect has a relevant influence. Imagine the intercept odds to be 1.4 (so 1.4 times more likely to have underestimation than not given a model without any of the 6 characteristics), and the odds ratio to be 0.5 for characteristic A (so 0.5 times more likely to have underestimation given a model that includes characteristic A compared to the intercept). This would mean that the odds of underestimation for a model with characteristic A is 1.4 \* 0.5, which is 0.7. So for the intercept, underestimation is dominant, while including A changes the results such that underestimation is not dominant anymore. To get to probabilities instead of odds, one needs to divide the intercept odds with the intercept odds +1.
+
+We create a function to extract the 90% CIs for the intercept odds
+
+```{r, warning = FALSE, message = FALSE}
+# function to extract intercept summary 
+extract_intercept <- function(GLMM, crop, extreme, conf_level = 0.90) {
+  # Extract tidy summary with CI on exponentiated scale (odds)
+  tidy_df <- broom.mixed::tidy(GLMM, effects = "fixed", conf.int = TRUE, conf.level = conf_level, exponentiate = TRUE)
+  
+  # Filter intercept only
+  intercept_df <- tidy_df %>% 
+    filter(term == "(Intercept)") %>% 
+    mutate(
+      crop = crop,
+      extreme = extreme,
+      combo = paste(crop, extreme, sep = " | ")
+    )
+  return(intercept_df)
+}
+```
+
+We can loop over all GLMMs to extract the intercept CIs and we bind the data into one large dataframe.
+
+```{r, warning = FALSE, message = FALSE}
+all_intercepts <- list()
+for (crop in crops) { # Start crops loop
+  for (extreme in extremes) { # Start extremes loop
+
+       GLMM <- GLMM_results[[paste(crop, extreme, sep = "_")]]
+    intercept_summary <- extract_intercept(GLMM, crop, extreme)
+    all_intercepts <- append(all_intercepts, list(intercept_summary))
+  }
+}
+all_intercepts_df <- bind_rows(all_intercepts)
+```
+
+Now we can visualize the CIs of the intercept odds in a forest plot
+
+```{r, message = FALSE, warning = FALSE, fig.height= 20, fig.width = 14}
+# Sort y-axis by descending odds
+all_intercepts_df <- all_intercepts_df %>%
+  arrange(estimate) %>%
+  mutate(combo = factor(combo, levels = unique(combo)))
+
+plot <- ggplot(all_intercepts_df, aes(x = estimate, y = combo)) +
+  geom_point(size = 3) +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.2, size = 1.2) +
+  geom_text(aes(label = sprintf("%.2f", estimate)), vjust = -1, hjust = -0.3, size = 3.5, color = "black") +
+  scale_x_log10(
+    name = "Intercept odds",
+    breaks = c(0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100),
+    labels = c("0.1", "0.2", "0.5", "1", "2", "5", "10", "20", "50", "100"),
+    limits = c(0.1, 100),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(y = NULL) 
+
+plot
+
+ggsave(file.path(base_path, "suppfig39_CharacteristicsExtremes.png"), plot, width = 14, height = nrow(plot_data) * 0.15 + 4, dpi = 300)
+```
