@@ -590,7 +590,7 @@ ggsave(file.path(base_path, "GGCMI-validation/results/main/suppfig5_GlobalPerfor
 
 ## Supplementary figures 6-10
 
-In addition to the maps with general performance, we also plot the total production per grid cell observed in the benchmark data. We calculate the total production as the yield multiplied by the total area of the grid cell and then take the mean production value across the years.
+In addition to the maps with general performance, we also plot the total production per grid cell observed in the benchmark data. We calculate the total production as the yield multiplied by the total crop area of the grid cell and then take the mean production value across the years.
 
 ### Supplementary figure 6 - aggregated crop production
 
