@@ -540,7 +540,7 @@ ens_map <- crop_data[["soy"]] %>%
              ctr = ctr) %>%
 distinct()
 
-map_rsquared <- base_map +
+map <- base_map +
   geom_tile(data = ens_map, aes(x = lon, y = lat, color = rsquared), size = 0.2) +
   scale_color_viridis(name = expression(R^2), option = "viridis", limits = c(0, 0.75),
                       guide = guide_colorbar(barwidth = unit(18, "cm"),  # Increase colorbar width
@@ -552,10 +552,10 @@ map_rsquared <- base_map +
   labs(x = "", y = "") +
   theme(legend.position = "bottom", legend.title = element_text(size = 17))
 
-map_rsquared
+map
 
 # Save the figure
-ggsave(file.path(base_path, "GGCMI-validation/results/main/suppfig4_GlobalPerformanceMap_soy.png"), map_rsquared, width = 18, height = 8, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/main/suppfig4_GlobalPerformanceMap_soy.png"), map, width = 18, height = 8, dpi = 300)
 ```
 
 ### Supplementary figure 5 – MAIZE
@@ -568,7 +568,7 @@ ens_map <- crop_data[["mai"]] %>%
              ctr = ctr) %>%
 distinct()
 
-map_rsquared <- base_map +
+map <- base_map +
   geom_tile(data = ens_map, aes(x = lon, y = lat, color = rsquared), size = 0.2) +
   scale_color_viridis(name = expression(R^2), option = "viridis", limits = c(0, 0.75),
                       guide = guide_colorbar(barwidth = unit(18, "cm"),  # Increase colorbar width
@@ -580,8 +580,192 @@ map_rsquared <- base_map +
   labs(x = "", y = "") +
   theme(legend.position = "bottom", legend.title = element_text(size = 17))
 
-map_rsquared
+map
 
 # Save the figure
-ggsave(file.path(base_path, "GGCMI-validation/results/main/suppfig5_GlobalPerformanceMap_mai.png"), map_rsquared, width = 18, height = 8, dpi = 300)
+ggsave(file.path(base_path, "GGCMI-validation/results/main/suppfig5_GlobalPerformanceMap_mai.png"), map, width = 18, height = 8, dpi = 300)
+```
+
+## Supplementary figures 6-10
+
+In addition to the maps with general performance, we also plot the total production per grid cell observed in the benchmark data. We calculate the total production as the yield multiplied by the total area of the grid cell and then take the mean production value across the years.
+
+### Supplementary figure 6 - aggregated crop production
+
+```{r}
+production <- crop_data[["aggr"]] %>% 
+  mutate(production = yield * total_area * 1/10000 *1/1000) %>% 
+  group_by(lat, lon) %>% 
+  summarise(mean_production = mean(production, na.rm= TRUE))
+
+map <- base_map +
+  geom_tile(
+    data = production,
+    aes(x = lon, y = lat, color = mean_production),
+    size = 0.2
+  ) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_color_viridis(
+    name = "Aggregated crop production (kilotons per year)",
+    option = "inferno",
+    guide = guide_colorbar(
+      barwidth = unit(18, "cm"),
+      barheight = unit(1, "cm"),
+      title.position = "top",
+      title.vjust = 1,
+      title.hjust = 0.5
+    )
+  )  +
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom")
+
+map
+
+# Save the figure
+ggsave(file.path(base_path, "/aggr_production.png"), map, width = 24, height = 12, dpi = 300)
+```
+
+### Supplementary figure 7 - RICE production
+
+```{r}
+production <- crop_data[["ri1"]] %>% 
+  mutate(production = yield * total_area * 1/10000 *1/1000) %>% 
+  group_by(lat, lon) %>% 
+  summarise(mean_production = mean(production, na.rm= TRUE))
+
+map <- base_map +
+  geom_tile(
+    data = production,
+    aes(x = lon, y = lat, color = mean_production),
+    size = 0.2
+  ) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_color_viridis(
+    name = "Rice production (kilotons per year)",
+    option = "inferno",
+    guide = guide_colorbar(
+      barwidth = unit(18, "cm"),
+      barheight = unit(1, "cm"),
+      title.position = "top",
+      title.vjust = 1,
+      title.hjust = 0.5
+    )
+  )  +
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom")
+
+map
+
+# Save the figure
+ggsave(file.path(base_path, "/ri1_production.png"), map, width = 24, height = 12, dpi = 300)
+```
+
+### Supplementary figure 8 - WHEAT production
+
+```{r}
+production <- crop_data[["wwh"]] %>% 
+  mutate(production = yield * total_area  * 1/10000 *1/1000) %>% 
+  group_by(lat, lon) %>% 
+  summarise(mean_production = mean(production, na.rm= TRUE))
+
+map <- base_map +
+  geom_tile(
+    data = production,
+    aes(x = lon, y = lat, color = mean_production),
+    size = 0.2
+  ) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_color_viridis(
+    name = "Wheat production (kilotons per year)",
+    option = "inferno",
+    guide = guide_colorbar(
+      barwidth = unit(18, "cm"),
+      barheight = unit(1, "cm"),
+      title.position = "top",
+      title.vjust = 1,
+      title.hjust = 0.5
+    )
+  )  +
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom")
+
+map
+
+# Save the figure
+ggsave(file.path(base_path, "/wwh_production.png"), map, width = 24, height = 12, dpi = 300)
+```
+
+### Supplementary figure 9 – SOY production
+
+```{r}
+production <- crop_data[["soy"]] %>% 
+  mutate(production = yield * total_area  * 1/10000 *1/1000) %>% 
+  group_by(lat, lon) %>% 
+  summarise(mean_production = mean(production, na.rm= TRUE))
+
+map <- base_map +
+  geom_tile(
+    data = production,
+    aes(x = lon, y = lat, color = mean_production),
+    size = 0.2
+  ) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_color_viridis(
+    name = "Soy production (kilotons per year)",
+    option = "inferno",
+    guide = guide_colorbar(
+      barwidth = unit(18, "cm"),
+      barheight = unit(1, "cm"),
+      title.position = "top",
+      title.vjust = 1,
+      title.hjust = 0.5
+    )
+  )  +
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom")
+
+map
+
+# Save the figure
+ggsave(file.path(base_path, "/soy_production.png"), map, width = 24, height = 12, dpi = 300)
+```
+
+### Supplementary figure 10 – MAIZE production
+
+```{r}
+production <- crop_data[["mai"]] %>% 
+  mutate(production = yield * total_area  * 1/10000 *1/1000) %>% 
+  group_by(lat, lon) %>% 
+  summarise(mean_production = mean(production, na.rm= TRUE))
+
+map <- base_map +
+  geom_tile(
+    data = production,
+    aes(x = lon, y = lat, color = mean_production),
+    size = 0.2
+  ) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_color_viridis(
+    name = "Maize production (kilotons per year)",
+    option = "inferno",
+    guide = guide_colorbar(
+      barwidth = unit(18, "cm"),
+      barheight = unit(1, "cm"),
+      title.position = "top",
+      title.vjust = 1,
+      title.hjust = 0.5
+    )
+  )  +
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom")
+
+map
+
+# Save the figure
+ggsave(file.path(base_path, "/mai_production.png"), map, width = 24, height = 12, dpi = 300)
 ```
