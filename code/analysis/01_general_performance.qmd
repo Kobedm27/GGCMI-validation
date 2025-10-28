@@ -20,6 +20,8 @@ This notebook will guide you through the code to plot the results of the general
 
 -   Supplementary figures 2-5: global performance maps for each crop (mai, soy, wwh, ri1)
 
+-   Supplementary figures 6-10: production maps for each crop (mai, soy, wwh, ri1, aggregated)
+
 The fully processed and filtered data files, available under GGCMI-validation/data/processed/figure_ready_data are required to produce the figures.
 :::
 
