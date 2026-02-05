@@ -3,11 +3,10 @@
 This repository contains the code supporting the paper:
 
 > **"Global gridded crop models underestimate yield losses from climatic extremes"**  
-> Submitted to *Nature Climate Change*, 2025.
+> Submitted to *Nature Climate Change*, 2026.
 
 Please cite this work as:
 
-Cornelia Auer, Kobe De Maeyer,...(2025). Global Gridded Crop Models underestimate yield losses from climatic extremes. Nature Climate Change (submitted). DOI: TBD
 
 ## Contents
 
