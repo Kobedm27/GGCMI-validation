@@ -2,7 +2,7 @@
 
 This repository contains the code supporting the paper:
 
-> **"Global gridded crop models underestimate yield losses from climatic extremes"**  
+> **"Global gridded crop models systematically underestimate yield losses from climatic extremes"**  
 > Submitted to *Nature Climate Change*, 2026.
 
 Please cite this work as:
@@ -38,16 +38,38 @@ The code is structured to store all intermediate data and final figures in prede
 
 ## Software dependencies and packages
 
+We used R version 4.5.0 with the following packages:
+- `ncdf4`
+- `testthat`
+- `stringr`
+- `raster `
+- `dplyr`
+- `tidyr`
+- `purrr`
+- `broom`
+- `tidyverse`
+- `sjPlot`
+- `rnaturalearth`
+- `viridis`
+- `spdep`
 
+Additionally, Python 3.11.5 was used with the following packages:
+- `pyreadr`
+- `numpy`
+- `xarray`
+- `pandas`
+
+No specialized hardware is required to replicate the analysis. However, access to a high-performance computing system, as used in this study, may help to alleviate computational constraints.
 
 ## Source data and demo
 The raw source data used in this study cannot be provided in this repository, as they are subject to data licenses from external open-source repositories. However, to ensure full reproducibility of the analysis, we provide detailed instructions for downloading and organizing the data within the `data/ folder` of this repository.
 
-For testing the code or running a demonstration, we recommend downloading the `GGCMI_yields` data for only 2–3 models, 1–2 crops and for one extreme type (e.g. hot), as the full dataset can be memory-intensive for local use.
+For testing the code or running a demonstration, we recommend downloading the `GGCMI_yields` data for only 2–3 models, 1–2 crops and for one extreme type (e.g. hot), as the full dataset can be memory-intensive for local use. In that case, please adapt the appropriate lines of code where e.g. crop names are defined and later looped over:
+
+`crops <- c("mai", "ri1", "ri2", "soy", "swh", "wwh")`
 
 ## Expected install and run time
-We expect the installation to be 
-Once all data is downloaded and all code files are properly set-up, we expect the run time for the demo to be less than 1 hour on a normal desktop computer. 
+Installing the repository should take less than 5 minutes. Preprocessing the downloaded (demo) source data can take several hours, depending on system resources. Once preprocessing is complete, the analysis code should run in roughly one hour for the demo on a standard desktop computer.
 
 ## License
 Licensed under the [MIT license](LICENSE).
