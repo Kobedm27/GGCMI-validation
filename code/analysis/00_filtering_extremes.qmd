@@ -103,7 +103,7 @@ process_crop <- function(crop) {
 
         # Load netCDFs
   nc_list <- lapply(nc_vars, function(v) {
-    nc_open(file.path(base_path, paste0("GGCMI-validation/data/processed/crop_aggregated/", v, "_", crop, ".nc")))
+    nc_open(file.path(base_path, paste0("GGCMI-validation/data/processed/extremes_indicators/crop_aggregated/", v, "_", crop, ".nc")))
   })
         
     } else {
@@ -132,7 +132,7 @@ process_crop <- function(crop) {
 
         # Load netCDFs
   nc_list <- lapply(nc_vars, function(v) {
-    nc_open(file.path(base_path, paste0("GGCMI-validation/data/processed/crop_specific/", v, "_", crop, ".nc")))
+    nc_open(file.path(base_path, paste0("GGCMI-validation/data/processed/extremes_indicators/crop_specific/", v, "_", crop, ".nc")))
   })
 
         }
