@@ -36,7 +36,9 @@ First run all code under `cropdata_preprocessing`, then `climdata_preprocessing`
 The code is structured to store all intermediate data and final figures in predefined folders within the repository.
 
 ## Source data and demo
-Note that we cannot provide the raw source data used for this study in this repository as they are under data license on other open-source repositories. Nevertheless, to be able to replicate the entire analysis, we give detailed instructions on how to download and organize the data in the folder structure of this repository under the `data/` folder. To test the functionality of the code we recommend to only download for 2-3 model simulations, since the data can be memory intensive. 
+The raw source data used in this study cannot be provided in this repository, as they are subject to data licenses from external open-source repositories. However, to ensure full reproducibility of the analysis, we provide detailed instructions for downloading and organizing the data within the `data/ folder` of this repository.
+
+For testing the code or running a demonstration, we recommend downloading the `GGCMI_yields` data for only 2–3 models and 1–2 crops, as the full dataset can be memory-intensive for local use.
 
 ## License
 Licensed under the [MIT license](LICENSE).
