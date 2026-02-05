@@ -7,6 +7,7 @@ This repository contains the code supporting the paper:
 
 Please cite this work as:
 
+xxx
 
 ## Contents
 
@@ -31,14 +32,17 @@ To reproduce the analysis:
 git clone https://github.com/Kobedm27/GGCMI-validation.git
 cd GGCMI-validation
 ```
-First run all code under `cropdata_preprocessing`, then `climdata_preprocessing`, and finally one can run the notebooks under `analysis`
+First run all code under `cropdata_preprocessing`, then `climdata_preprocessing`, and finally one can run the notebooks under `analysis`. Once all data is downloaded and all code files are properly set-up, we expect the run time for the demo to be less than 1 hour on a normal desktop computer. 
 
 The code is structured to store all intermediate data and final figures in predefined folders within the repository.
+
+## 
 
 ## Source data and demo
 The raw source data used in this study cannot be provided in this repository, as they are subject to data licenses from external open-source repositories. However, to ensure full reproducibility of the analysis, we provide detailed instructions for downloading and organizing the data within the `data/ folder` of this repository.
 
 For testing the code or running a demonstration, we recommend downloading the `GGCMI_yields` data for only 2–3 models and 1–2 crops, as the full dataset can be memory-intensive for local use.
+
 
 ## License
 Licensed under the [MIT license](LICENSE).
