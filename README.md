@@ -1,4 +1,4 @@
-# Global Gridded Crop Models underestimate yield losses from climatic extremes
+# Global Gridded Crop Models systematically underestimate yield losses from climatic extremes
 
 This repository contains the code supporting the paper:
 
@@ -27,14 +27,14 @@ xxx
 
 ## Getting Started
 
-To reproduce the analysis:
+To reproduce the entire analysis:
 ```bash
 git clone https://github.com/Kobedm27/GGCMI-validation.git
 cd GGCMI-validation
 ```
 First run all code under `cropdata_preprocessing`, then `climdata_preprocessing`, and finally one can run the notebooks under `analysis`. 
 
-The code is structured to store all intermediate data and final figures in predefined folders within the repository.
+The code is structured to store all intermediate data and final figures in predefined folders within the repository. Intermediate data are publicly available on https://doi.org/10.5281/zenodo.18496260. 
 
 ## Software dependencies and packages
 
@@ -61,15 +61,20 @@ Additionally, Python 3.11.5 was used with the following packages:
 
 No specialized hardware is required to replicate the analysis. However, access to a high-performance computing system, as used in this study, may help to alleviate computational constraints.
 
-## Source data and demo
-The raw source data used in this study cannot be provided in this repository, as they are subject to data licenses from external open-source repositories. However, to ensure full reproducibility of the analysis, we provide detailed instructions for downloading and organizing the data within the `data/ folder` of this repository.
+## Source and intermediate data
 
-For testing the code or running a demonstration, we recommend downloading the `GGCMI_yields` data for only 2–3 models, 1–2 crops and for one extreme type (e.g. hot), as the full dataset can be memory-intensive for local use. In that case, please adapt the appropriate lines of code where e.g. crop names are defined and later looped over:
+The raw source data used in this study cannot be included in this repository because they are subject to data licenses from external open-source providers. To ensure full reproducibility, we provide detailed instructions for downloading and organizing all required datasets within the `data/` directory of this repository.
 
-`crops <- c("mai", "ri1", "ri2", "soy", "swh", "wwh")`
+For testing and debugging the preprocessing code, we recommend downloading a reduced subset of the `GGCMI_yields` data (e.g. 2–3 models, 1–2 crops, and a single extreme type such as *hot*), as the full dataset can be memory-intensive on local machines. In this case, please adapt the relevant lines of code where crop names are defined and looped over, for example:
+```r
+crops <- c("mai", "ri1", "ri2", "soy", "swh", "wwh")
+```
+
+To reproduce the quantitative results and figures presented in the paper, we provide the fully processed intermediate data via Zenodo: https://doi.org/10.5281/zenodo.18496260
+Please download the folders `extremes_indicators` and `integrated_cropdata` and place them into the corresponding (empty) directories in this repository. Once these folders are correctly organized, all scripts in the `analysis/` directory should run without modification.
 
 ## Expected install and run time
-Installing the repository should take less than 5 minutes. Preprocessing the downloaded (demo) source data can take several hours, depending on system resources. Once preprocessing is complete, the analysis code should run in roughly one hour for the demo on a standard desktop computer.
+Installing the repository and required dependencies should take less than 10 minutes. Preprocessing the raw source data may take several hours, depending on system resources. When using the provided intermediate data, the full analysis pipeline should complete in approximately on hour on a standard desktop computer. 
 
 ## License
 Licensed under the [MIT license](LICENSE).
