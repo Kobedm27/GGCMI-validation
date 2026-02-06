@@ -59,7 +59,7 @@ Additionally, Python 3.11.5 was used with the following packages:
 - `xarray`
 - `pandas`
 
-No specialized hardware is required to replicate the analysis. However, access to a high-performance computing system, as used in this study, may help to alleviate computational constraints.
+No specialized hardware is required to replicate the analysis. However, access to a high-performance computing system, as used in this study, may help to alleviate computational constraints especially for running the preprocessing code. 
 
 ## Source and intermediate data
 
