@@ -4,5 +4,5 @@ This folder contains pre-processed datasets used in the analysis and plotting.
 
 All data files were generated from the scripts in `code/` using inputs from `data/raw/`.
 
-The intermediate data stored under the `figures ` folder aren open-source available on Zenodo through this link: https://doi.org/10.5281/zenodo.18496260
+The intermediate data stored under the `extremes_indicators` and `integrated_cropdata` folders are publicly available on Zenodo through this link: https://doi.org/10.5281/zenodo.18496260
 
