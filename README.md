@@ -74,7 +74,7 @@ To reproduce the quantitative results and figures presented in the paper, we pro
 Please download the folders `extremes_indicators` and `integrated_cropdata` and place them into the corresponding (empty) directories in this repository. Once these folders are correctly organized, all scripts in the `analysis/` directory should run without modification.
 
 ## Expected install and run time
-Installing the repository and required dependencies should take less than 10 minutes. Preprocessing the raw source data may take several hours, depending on system resources. When using the provided intermediate data, the full analysis pipeline should complete in approximately on hour on a standard desktop computer. 
+Installing the repository and required dependencies should take less than 10 minutes. Preprocessing the raw source data may take several hours, depending on system resources. When using the provided intermediate data, the full analysis pipeline should complete in approximately one hour on a standard desktop computer. 
 
 ## License
 Licensed under the [MIT license](LICENSE).
