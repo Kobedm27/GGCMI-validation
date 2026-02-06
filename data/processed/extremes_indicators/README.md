@@ -10,3 +10,5 @@ The folder is organised in two sub-folders:
 - `crop_aggegated`: contains indicator data for the main analysis of the paper.
 - `crop_specific`: contains indicator data for the crop-specific figures in the appendix of the paper.
 
+
+The data can be downloaded from this link: https://doi.org/10.5281/zenodo.18496260
