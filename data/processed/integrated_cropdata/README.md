@@ -6,3 +6,5 @@ The folder contains:
 - `crop_specific_data.RData`: contains the ready dataframes for each crop separately
 - `aggr_bench.RData`: dataframe with the ready GDHY benchmark data aggregated over crops
 - `aggr_sim.RData`: dataframe with the ready ISIMIP3a simulation data aggregated over crops
+
+The data can be downloaded from this link: https://doi.org/10.5281/zenodo.18496260
