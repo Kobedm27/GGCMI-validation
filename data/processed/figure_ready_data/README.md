@@ -1,6 +1,6 @@
 # Figure ready data
 
- In this folder all the data files ready for the compilation of the figures are stored. The data files are computed for each <crop>, including also the crop-aggregated data (aggr). 
+ In this folder all the data files ready for the compilation of the figures are stored. The data files are computed for each crop, including also the crop-aggregated data (aggr). The code generating these files can be found in `code/analysis/filtering_extremes.qmd`. 
 
  
 The folder contains:
